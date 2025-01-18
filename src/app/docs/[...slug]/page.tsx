@@ -11,7 +11,7 @@ interface PageProps {
 }
 
 export async function generateMetadata(
-    { params }: PageProps
+    { params }: Awaited<PageProps>
 ): Promise<Metadata> {
     try {
         if (params.slug.length === 1) {
@@ -41,7 +41,7 @@ export async function generateMetadata(
     }
 }
 
-export default async function DocPage({ params }: PageProps) {
+export default async function DocPage({ params }: Awaited<PageProps>) {
     try {
         // Handle section routes (e.g., /docs/getting-started)
         if (params.slug.length === 1) {
