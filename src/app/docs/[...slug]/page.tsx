@@ -4,14 +4,13 @@ import { DocsLayout } from '@containers/Docs/DocsLayout';
 import { MDXContent } from '@containers/Docs/MDXContent';
 import { notFound, redirect } from 'next/navigation';
 
-interface PageProps {
-    params: {
-        slug: string[];
-    };
+export interface GenerateMetadataProps {
+    params: { slug: string[] }
+    searchParams: { [key: string]: string | string[] | undefined }
 }
 
 export async function generateMetadata(
-    { params }: Awaited<PageProps>
+    { params }: GenerateMetadataProps
 ): Promise<Metadata> {
     try {
         if (params.slug.length === 1) {
@@ -41,7 +40,11 @@ export async function generateMetadata(
     }
 }
 
-export default async function DocPage({ params }: Awaited<PageProps>) {
+export default async function DocPage({
+    params,
+}: {
+    params: { slug: string[] }
+}) {
     try {
         // Handle section routes (e.g., /docs/getting-started)
         if (params.slug.length === 1) {
