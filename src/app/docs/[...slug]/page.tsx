@@ -4,17 +4,15 @@ import { DocsLayout } from '@containers/Docs/DocsLayout';
 import { MDXContent } from '@containers/Docs/MDXContent';
 import { notFound, redirect } from 'next/navigation';
 
-interface PageParams {
-    slug: string[];
-}
-
-interface PageProps {
-    params: PageParams;
-    searchParams: { [key: string]: string | string[] | undefined };
+type Props = {
+    params: {
+        slug: string[]
+    }
+    searchParams: { [key: string]: string | string[] | undefined }
 }
 
 export async function generateMetadata(
-    { params }: PageProps
+    { params }: Props
 ): Promise<Metadata> {
     try {
         if (params.slug.length === 1) {
@@ -44,7 +42,7 @@ export async function generateMetadata(
     }
 }
 
-export default async function DocPage({ params }: PageProps) {
+export default async function DocPage({ params }: Props) {
     try {
         // Handle section routes (e.g., /docs/getting-started)
         if (params.slug.length === 1) {
