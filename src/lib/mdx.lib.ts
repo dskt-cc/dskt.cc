@@ -7,10 +7,17 @@ import rehypeSlug from 'rehype-slug';
 import rehypeHighlight from 'rehype-highlight';
 import type { DocFrontMatter } from '@/types/docs';
 
+import type { MDXRemoteSerializeResult } from 'next-mdx-remote';
+
+interface GetDocBySlugResult {
+    mdxSource: MDXRemoteSerializeResult;
+    frontMatter: DocFrontMatter;
+}
+
 const ROOT_PATH = process.cwd();
 const DOCS_PATH = path.join(ROOT_PATH, 'src/content/docs');
 
-export async function getSectionDocs(section: string) {
+export async function getSectionDocs(section: string): Promise<DocFrontMatter[]> {
     try {
         const sectionPath = path.join(DOCS_PATH, section);
         const files = await fs.readdir(sectionPath);
@@ -39,7 +46,7 @@ export async function getSectionDocs(section: string) {
     }
 }
 
-export async function getDocBySlug(section: string, slug: string) {
+export async function getDocBySlug(section: string, slug: string): Promise<GetDocBySlugResult> {
     try {
         const fullPath = path.join(DOCS_PATH, section, `${slug}.mdx`);
         const fileContents = await fs.readFile(fullPath, 'utf8');

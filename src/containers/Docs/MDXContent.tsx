@@ -1,10 +1,12 @@
 'use client';
 
-import { MDXRemote } from "next-mdx-remote";
+import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote';
 
-import { MDXRemoteSerializeResult } from "next-mdx-remote";
+interface MDXContentProps {
+    source: MDXRemoteSerializeResult;
+}
 
-export function MDXContent({ source }: { source: MDXRemoteSerializeResult }) {
+export function MDXContent({ source }: MDXContentProps) {
     return (
         <div className="prose prose-invert max-w-none">
             <MDXRemote {...source} />
