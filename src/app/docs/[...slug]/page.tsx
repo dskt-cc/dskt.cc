@@ -7,8 +7,8 @@ import { notFound, redirect } from 'next/navigation';
 
 type Props = {
     params: any;  // Temporarily use 'any' to bypass type checking
-    searchParams: { [key: string]: string | string[] | undefined }
-}
+    searchParams: any;  // Temporarily use 'any' to bypass type checking
+};
 
 
 export async function generateMetadata(
