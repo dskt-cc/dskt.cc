@@ -1,0 +1,35 @@
+---
+title: Publishing
+description: Learn the dskt.cc publishing standards
+---
+
+# Metadata Standards
+
+To list your mod on dskt.cc, include a `dskt.json` file in the root of your repository.
+
+## File Structure
+
+```json
+{
+  "author": "dvhsh",
+  "discord": "3234324324", 
+  "version": "1.0.4",
+  "type": "MelonLoader",
+  "category": ["Overhaul"],
+  "description": "A MelonLoader mod that lets you chat with your Desktop Mate using AI! ♪"
+}
+```
+
+## Fields
+
+- **author**: Your GitHub username
+- **discord**: Your Discord user ID
+- **version**: Current version of your mod
+- **type**: `"MelonLoader"` | `"BepInEx"` | `"Both"`
+- **category**: Array of categories from:
+  - `"Performance"`: Performance improvements
+  - `"Quality of Life"`: Convenience features
+  - `"Content"`: New features or content
+  - `"Overhaul"`: Major gameplay changes
+  - `"Other"`: Misc modifications
+- **description**: Brief description of your mod
