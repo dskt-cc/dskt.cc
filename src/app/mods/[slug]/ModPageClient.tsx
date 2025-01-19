@@ -61,6 +61,7 @@ const CustomImage = ({
   useEffect(() => {
     const loadImage = async () => {
       if (src.includes("img.shields.io")) return;
+      if (src.includes("i.imgur.com")) return;
       if (src.startsWith("http")) return;
 
       const mainUrl = `${repo.replace("github.com", "raw.githubusercontent.com")}/main/${src}`;
@@ -101,7 +102,7 @@ const CustomImage = ({
   }
 
   return (
-    <div className="relative w-full h-[400px] my-4">
+    <div className="relative w-full h-[400px] my-4 mb-4">
       <Image
         src={imageSrc}
         alt={alt}

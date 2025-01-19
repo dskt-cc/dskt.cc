@@ -21,6 +21,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "img.shields.io",
       },
+      {
+        protocol: "https",
+        hostname: "i.imgur.com",
+      }
     ],
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",
