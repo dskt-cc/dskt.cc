@@ -34,7 +34,9 @@ const fetchModMeta = async (repo: string): Promise<ModMeta> => {
   try {
     return await fetchJSON<ModMeta>(convertToRawUrl(repo, "dskt.json", "main"));
   } catch {
-    return await fetchJSON<ModMeta>(convertToRawUrl(repo, "dskt.json", "master"));
+    return await fetchJSON<ModMeta>(
+      convertToRawUrl(repo, "dskt.json", "master"),
+    );
   }
 };
 

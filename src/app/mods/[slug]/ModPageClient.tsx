@@ -5,13 +5,10 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { TbBrandGithub, TbDownload } from "react-icons/tb";
-import { fetchMods, fetchModMeta } from "@lib/mods.lib";
-import type { Mod, ModMeta } from "@types";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
-import { ModSlugCard } from "@components/Card/ModSlugCard";
+import { TbBrandGithub, TbDownload } from "react-icons/tb";
 import {
   HiOutlineUser,
   HiOutlineTag,
@@ -19,9 +16,76 @@ import {
   HiOutlineCollection,
 } from "react-icons/hi";
 
+import { fetchMods, fetchModMeta } from "@lib/mods.lib";
+import { ModSlugCard } from "@components/Card/ModSlugCard";
+import type { Mod, ModMeta } from "@types";
+
+type ImageDomainConfig = {
+  domain: string;
+  handler: (src: string) => {
+    src: string;
+    props?: Partial<React.ComponentProps<typeof Image>>;
+  };
+};
+
+const IMAGE_CONFIGS: ImageDomainConfig[] = [
+  {
+    domain: "img.shields.io",
+    handler: (src) => ({
+      src,
+      props: {
+        width: 124,
+        height: 28,
+        className: "inline-block",
+      },
+    }),
+  },
+  {
+    domain: "i.imgur.com",
+    handler: (src) => ({ src }),
+  },
+  {
+    domain: "private-user-images.githubusercontent.com",
+    handler: (src) => ({
+      src,
+      props: {
+        unoptimized: true,
+      },
+    }),
+  },
+  {
+    domain: "avatars.githubusercontent.com",
+    handler: (src) => ({ src }),
+  },
+  {
+    domain: "raw.githubusercontent.com",
+    handler: (src) => ({ src }),
+  },
+] as const;
+
+const getImageConfig = (src: string) => {
+  return IMAGE_CONFIGS.find((config) => src.includes(config.domain));
+};
+
+const YOUTUBE_PATTERNS = [
+  /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&]+)/i,
+  /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([^?]+)/i,
+  /(?:https?:\/\/)?(?:www\.)?youtu\.be\/([^?]+)/i,
+  /(?:https?:\/\/)?(?:www\.)?youtube\.com\/shorts\/([^?]+)/i,
+] as const;
+
 interface ModPageClientProps {
-  slug: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  slug: any;
 }
+
+const getYouTubeVideoId = (url: string): string | null => {
+  for (const pattern of YOUTUBE_PATTERNS) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
+  return null;
+};
 
 const tryFetchWithBranch = async (url: string, branch: string) => {
   const branchUrl = url.replace("/main/", `/${branch}/`);
@@ -37,13 +101,58 @@ const convertImageUrls = (
   repo: string,
   branch: string,
 ): string => {
-  return markdown.replace(
-    /!\[(.*?)\]\(((?!http).*?)\)/g,
-    (match, alt, path) => {
-      const rawUrl = `${repo.replace("github.com", "raw.githubusercontent.com")}/${branch}/${path}`;
-      return `![${alt}](${rawUrl})`;
-    },
+  return markdown.replace(/!\[(.*?)\]\(((?!http).*?)\)/g, (_, alt, path) => {
+    const rawUrl = `${repo.replace(
+      "github.com",
+      "raw.githubusercontent.com",
+    )}/${branch}/${path}`;
+    return `![${alt}](${rawUrl})`;
+  });
+};
+
+const YouTubeEmbed = ({ url }: { url: string }) => {
+  const videoId = getYouTubeVideoId(url);
+  if (!videoId) return <a href={url}>{url}</a>;
+
+  return (
+    <iframe
+      src={`https://www.youtube.com/embed/${videoId}`}
+      title="YouTube video player"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowFullScreen
+      className="w-full aspect-video rounded-lg my-4"
+    />
   );
+};
+
+const CustomParagraph = ({
+  children,
+  node,
+}: {
+  children: React.ReactNode;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  node: any;
+}) => {
+  // Check if paragraph only contains an image
+  const hasOnlyImage =
+    node.children.length === 1 &&
+    node.children[0].type === "element" &&
+    node.children[0].tagName === "img";
+
+  // Check if paragraph only contains a YouTube embed
+  const hasOnlyYouTube =
+    node.children.length === 1 &&
+    node.children[0].type === "element" &&
+    node.children[0].tagName === "a" &&
+    (node.children[0].properties?.href?.includes("youtube.com") ||
+      node.children[0].properties?.href?.includes("youtu.be"));
+
+  // If it only contains an image or YouTube embed, don't wrap in <p>
+  if (hasOnlyImage || hasOnlyYouTube) {
+    return <>{children}</>;
+  }
+
+  return <p>{children}</p>;
 };
 
 const CustomImage = ({
@@ -56,55 +165,43 @@ const CustomImage = ({
   repo: string;
 }) => {
   const [error, setError] = useState(false);
-  const [imageSrc, setImageSrc] = useState(src);
-
-  const WHITELISTED_DOMAINS = [
-    'img.shields.io',
-    'i.imgur.com',
-    'raw.githubusercontent.com'
-  ];
-
-  const isWhitelisted = (url: string): boolean => {
-    if (!url.startsWith('http')) return true; // Local images are allowed
-    return WHITELISTED_DOMAINS.some(domain => url.includes(domain));
-  };
+  const [imageData, setImageData] = useState<{
+    src: string;
+    props?: Partial<React.ComponentProps<typeof Image>>;
+  }>({ src });
 
   useEffect(() => {
     const loadImage = async () => {
-      if (!isWhitelisted(src)) {
-        setError(true);
-        return;
-      }
-
-      if (src.includes("img.shields.io")) {
-        setImageSrc(src);
-        return;
-      }
-
-      if (src.includes("i.imgur.com")) {
-        setImageSrc(src);
-        return;
-      }
-
-      if (src.startsWith("http")) {
-        setError(true);
-        return;
-      }
-
-      const mainUrl = `${repo.replace("github.com", "raw.githubusercontent.com")}/main/${src}`;
-      const masterUrl = `${repo.replace("github.com", "raw.githubusercontent.com")}/master/${src}`;
-
       try {
-        const mainRes = await fetch(mainUrl);
-        if (mainRes.ok) {
-          setImageSrc(mainUrl);
+        if (src.startsWith("http")) {
+          const config = getImageConfig(src);
+          if (config) {
+            setImageData(config.handler(src));
+            return;
+          }
+          setError(true);
           return;
         }
-        const masterRes = await fetch(masterUrl);
-        if (masterRes.ok) {
-          setImageSrc(masterUrl);
-          return;
+
+        const branches = ["main", "master"];
+        for (const branch of branches) {
+          const rawUrl = `${repo.replace(
+            "github.com",
+            "raw.githubusercontent.com",
+          )}/${branch}/${src}`;
+
+          const response = await fetch(rawUrl);
+          if (response.ok) {
+            setImageData({
+              src: rawUrl,
+              props: {
+                priority: true,
+              },
+            });
+            return;
+          }
         }
+
         setError(true);
       } catch {
         setError(true);
@@ -114,16 +211,19 @@ const CustomImage = ({
     loadImage();
   }, [src, repo]);
 
-  if (error || !isWhitelisted(src)) return null;
+  if (error) return null;
 
-  if (src.includes("img.shields.io")) {
+  const config = getImageConfig(imageData.src);
+  if (config) {
+    const { src: configuredSrc, props: configProps } = config.handler(
+      imageData.src,
+    );
     return (
       <Image
-        src={src}
+        src={configuredSrc}
         alt={alt}
-        width={124}
-        height={28}
-        className="inline-block"
+        {...configProps}
+        onError={() => setError(true)}
       />
     );
   }
@@ -131,17 +231,38 @@ const CustomImage = ({
   return (
     <div className="relative w-full h-[400px] my-4">
       <Image
-        src={imageSrc}
+        src={imageData.src}
         alt={alt}
         fill
         className="object-contain"
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         priority
         onError={() => setError(true)}
+        {...imageData.props}
       />
     </div>
   );
 };
+
+export const WHITELISTED_DOMAINS = IMAGE_CONFIGS.map((config) => config.domain);
+
+const LoadingSkeleton = () => (
+  <div className="min-h-screen bg-gradient-to-b from-miku-gray to-black pt-24">
+    <div className="container mx-auto px-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="animate-pulse space-y-4">
+          <div className="h-12 bg-miku-deep/20 rounded-lg w-2/3" />
+          <div className="h-6 bg-miku-deep/20 rounded-lg w-1/2" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-24 bg-miku-deep/20 rounded-lg" />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
 export function ModPageClient({ slug }: ModPageClientProps) {
   const [modData, setModData] = useState<{
@@ -180,14 +301,14 @@ export function ModPageClient({ slug }: ModPageClientProps) {
         try {
           const mainResponse = await tryFetchWithBranch(
             `${baseReadmeUrl}/main/README.md`,
-            "main"
+            "main",
           );
           readme = await mainResponse.text();
           branch = "main";
         } catch {
           const masterResponse = await tryFetchWithBranch(
             `${baseReadmeUrl}/master/README.md`,
-            "master"
+            "master",
           );
           readme = await masterResponse.text();
           branch = "master";
@@ -211,35 +332,13 @@ export function ModPageClient({ slug }: ModPageClientProps) {
     loadModData();
   }, [slug]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-miku-gray to-black pt-24">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="animate-pulse space-y-4">
-              <div className="h-12 bg-miku-deep/20 rounded-lg w-2/3"></div>
-              <div className="h-6 bg-miku-deep/20 rounded-lg w-1/2"></div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[...Array(4)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="h-24 bg-miku-deep/20 rounded-lg"
-                  ></div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+  if (loading) return <LoadingSkeleton />;
   if (!modData.mod || !modData.meta) return notFound();
 
   const { mod, meta, readme } = modData;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-miku-gray to-black pt-24">
+    <div className="pt-24">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <motion.div
@@ -305,6 +404,7 @@ export function ModPageClient({ slug }: ModPageClientProps) {
             <ReactMarkdown
               rehypePlugins={[rehypeRaw, rehypeSanitize]}
               components={{
+                p: CustomParagraph,
                 img: ({ src, alt }) => {
                   if (!src) return null;
                   return (
@@ -315,8 +415,17 @@ export function ModPageClient({ slug }: ModPageClientProps) {
                     />
                   );
                 },
-                a: ({ href, children }) =>
-                  href ? (
+                a: ({ href, children }) => {
+                  if (!href) return null;
+
+                  if (
+                    href.includes("youtube.com") ||
+                    href.includes("youtu.be")
+                  ) {
+                    return <YouTubeEmbed url={href} />;
+                  }
+
+                  return (
                     <Link
                       href={href}
                       className="text-miku-teal hover:text-miku-waterleaf transition-colors duration-200"
@@ -329,7 +438,8 @@ export function ModPageClient({ slug }: ModPageClientProps) {
                     >
                       {children}
                     </Link>
-                  ) : null,
+                  );
+                },
               }}
             >
               {readme || "No README available"}

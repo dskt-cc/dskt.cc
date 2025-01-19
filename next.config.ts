@@ -4,28 +4,15 @@ const nextConfig: NextConfig = {
   pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
   /* config options here */
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "raw.githubusercontent.com",
-      },
-      {
-        protocol: "https",
-        hostname: "github.com",
-      },
-      {
-        protocol: "https",
-        hostname: "avatars.githubusercontent.com",
-      },
-      {
-        protocol: "https",
-        hostname: "img.shields.io",
-      },
-      {
-        protocol: "https",
-        hostname: "i.imgur.com",
-      }
+    domains: [
+      "img.shields.io",
+      "i.imgur.com",
+      "raw.githubusercontent.com",
+      "private-user-images.githubusercontent.com",
+      "avatars.githubusercontent.com",
+      "github.com",
     ],
+    unoptimized: true, // For GitHub private images
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",

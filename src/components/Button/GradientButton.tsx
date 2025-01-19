@@ -17,8 +17,10 @@ export const GradientButton = ({
   className = "",
 }: GradientButtonProps) => {
   const gradientClasses = {
-    primary: "from-miku-deep from-10% via-miku-teal/90 via-50% to-miku-waterleaf/80 to-90%",
-    secondary: "from-miku-deep from-10% via-miku-teal/90 via-50% to-miku-waterleaf/80 to-90%",
+    primary:
+      "from-miku-deep from-10% via-miku-teal/90 via-50% to-miku-waterleaf/80 to-90%",
+    secondary:
+      "from-miku-deep from-10% via-miku-teal/90 via-50% to-miku-waterleaf/80 to-90%",
   };
 
   return (
@@ -42,12 +44,14 @@ export const GradientButton = ({
           group
         `}
       >
-        <div className={`
+        <div
+          className={`
           absolute inset-0 
           bg-gradient-to-r ${gradientClasses[gradient]}
           group-hover:brightness-105
           transition-all duration-200
-        `} />
+        `}
+        />
         <div className="absolute inset-0 border border-miku-teal/10 group-hover:border-miku-teal/20 rounded-lg transition-colors duration-200" />
         <div className="relative flex items-center gap-2 text-white">
           {children}

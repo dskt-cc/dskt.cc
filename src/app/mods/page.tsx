@@ -36,25 +36,29 @@ export default function ModsPage() {
       type: "All" as const,
       icon: null,
       label: "All",
-      colors: "from-miku-aquamarine/90 from-10% via-miku-waterleaf/80 via-50% to-miku-teal/90 to-90%",
+      colors:
+        "from-miku-aquamarine/90 from-10% via-miku-waterleaf/80 via-50% to-miku-teal/90 to-90%",
     },
     {
       type: "MelonLoader" as const,
       icon: <TbMelon className="text-lg" />,
       label: "MelonLoader",
-      colors: "from-miku-aquamarine/90 from-10% via-miku-waterleaf/80 via-50% to-miku-teal/90 to-90%",
+      colors:
+        "from-miku-aquamarine/90 from-10% via-miku-waterleaf/80 via-50% to-miku-teal/90 to-90%",
     },
     {
       type: "BepInEx" as const,
       icon: <BiPackage className="text-lg" />,
       label: "BepInEx",
-      colors: "from-miku-aquamarine/90 from-10% via-miku-waterleaf/80 via-50% to-miku-teal/90 to-90%",
+      colors:
+        "from-miku-aquamarine/90 from-10% via-miku-waterleaf/80 via-50% to-miku-teal/90 to-90%",
     },
     {
       type: "Both" as const,
       icon: <BiSolidPackage className="text-lg" />,
       label: "Both",
-      colors: "from-miku-aquamarine/90 from-10% via-miku-waterleaf/80 via-50% to-miku-teal/90 to-90%",
+      colors:
+        "from-miku-aquamarine/90 from-10% via-miku-waterleaf/80 via-50% to-miku-teal/90 to-90%",
     },
   ];
 
