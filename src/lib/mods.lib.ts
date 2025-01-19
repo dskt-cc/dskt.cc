@@ -41,8 +41,7 @@ const fetchModMeta = async (repo: string): Promise<ModMeta> => {
     const mainUrl = convertToRawUrl(repo, "dskt.json", "main");
     try {
       return await fetchJSON<ModMeta>(mainUrl);
-    } catch (error) {
-      console.error("Failed to fetch mod metadata from main branch:", error);
+    } catch  {
       const masterUrl = convertToRawUrl(repo, "dskt.json", "master");
       return await fetchJSON<ModMeta>(masterUrl);
     }
