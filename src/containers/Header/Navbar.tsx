@@ -29,7 +29,7 @@ export const Navbar = () => {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-miku-gray/90 backdrop-blur-sm border-b border-miku-deep/30">
+    <header className="fixed top-0 left-0 right-0 z-40 bg-miku-gray/90 backdrop-blur-sm border-b border-miku-deep/30">
       <nav className="container mx-auto px-4 h-16">
         <div className="flex items-center justify-between h-full">
           <Link href="/" className="flex items-center gap-2">
