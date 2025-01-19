@@ -5,7 +5,7 @@ import type { Mod, ModType } from "@types";
 import { fetchMods } from "@lib/mods.lib";
 import { ModCard } from "@components/Card/ModCard";
 import { TbMelon } from "react-icons/tb";
-import { BiPackage } from "react-icons/bi";
+import { BiPackage, BiSolidPackage } from "react-icons/bi";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function ModsPage() {
@@ -29,6 +29,33 @@ export default function ModsPage() {
 
     loadMods();
   }, []);
+
+  const modTypeButtons = [
+    {
+      type: "All" as const,
+      icon: null,
+      label: "All",
+      colors: "bg-white/10 shadow-white/5",
+    },
+    {
+      type: "MelonLoader" as const,
+      icon: <TbMelon className="text-lg" />,
+      label: "MelonLoader",
+      colors: "from-green-500 to-green-600 shadow-green-500/20",
+    },
+    {
+      type: "BepInEx" as const,
+      icon: <BiPackage className="text-lg" />,
+      label: "BepInEx",
+      colors: "from-purple-500 to-purple-600 shadow-purple-500/20",
+    },
+    {
+      type: "Both" as const,
+      icon: <BiSolidPackage className="text-lg" />,
+      label: "Both",
+      colors: "from-blue-500 to-blue-600 shadow-blue-500/20",
+    },
+  ];
 
   const renderContent = () => {
     if (loading) {
@@ -94,8 +121,6 @@ export default function ModsPage() {
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-b from-gray-900 to-black">
-      {" "}
-      {/* 4rem = 16 (navbar height) */}
       <div className="container mx-auto px-4 py-12">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
           <motion.h1
@@ -110,38 +135,21 @@ export default function ModsPage() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="flex gap-3"
+            className="flex flex-wrap justify-center gap-3"
           >
-            <button
-              onClick={() => setSelectedType("All")}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-lg transition-all duration-200 ${
-                selectedType === "All"
-                  ? "bg-white/10 text-white shadow-lg shadow-white/5 scale-105"
-                  : "bg-gray-800/50 text-gray-400 hover:bg-gray-800 hover:scale-105"
-              }`}
-            >
-              All
-            </button>
-            <button
-              onClick={() => setSelectedType("MelonLoader")}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-lg transition-all duration-200 ${
-                selectedType === "MelonLoader"
-                  ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg shadow-green-500/20 scale-105"
-                  : "bg-gray-800/50 text-gray-400 hover:bg-gray-800 hover:scale-105"
-              }`}
-            >
-              <TbMelon className="text-lg" /> MelonLoader
-            </button>
-            <button
-              onClick={() => setSelectedType("BepInEx")}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-lg transition-all duration-200 ${
-                selectedType === "BepInEx"
-                  ? "bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg shadow-purple-500/20 scale-105"
-                  : "bg-gray-800/50 text-gray-400 hover:bg-gray-800 hover:scale-105"
-              }`}
-            >
-              <BiPackage className="text-lg" /> BepInEx
-            </button>
+            {modTypeButtons.map(({ type, icon, label, colors }) => (
+              <button
+                key={type}
+                onClick={() => setSelectedType(type)}
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-lg transition-all duration-200 ${
+                  selectedType === type
+                    ? `bg-gradient-to-r ${colors} text-white shadow-lg scale-105`
+                    : "bg-gray-800/50 text-gray-400 hover:bg-gray-800 hover:scale-105"
+                }`}
+              >
+                {icon} {label}
+              </button>
+            ))}
           </motion.div>
         </div>
 
