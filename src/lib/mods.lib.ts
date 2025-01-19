@@ -36,21 +36,12 @@ const fetchMods = async (): Promise<Mod[]> => {
   return fetchJSON<Mod[]>(`${GITHUB_RAW_URL}/mods.json`);
 };
 
+// @TODO: this should probably have error handling, but in a way that dosent log 404 when main is called master
 const fetchModMeta = async (repo: string): Promise<ModMeta> => {
   try {
-    const mainUrl = convertToRawUrl(repo, "dskt.json", "main");
-    try {
-      return await fetchJSON<ModMeta>(mainUrl);
-    } catch  {
-      const masterUrl = convertToRawUrl(repo, "dskt.json", "master");
-      return await fetchJSON<ModMeta>(masterUrl);
-    }
-  } catch (error) {
-    console.error(
-      "Failed to fetch mod metadata from both main and master branches:",
-      error,
-    );
-    throw error;
+    return await fetchJSON<ModMeta>(convertToRawUrl(repo, "dskt.json", "main"));
+  } catch {
+    return await fetchJSON<ModMeta>(convertToRawUrl(repo, "dskt.json", "master"));
   }
 };
 

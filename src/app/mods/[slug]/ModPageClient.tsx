@@ -151,34 +151,22 @@ export function ModPageClient({ slug }: ModPageClientProps) {
         let branch: string;
 
         try {
-          // Try main branch first
           const mainResponse = await tryFetchWithBranch(
             `${baseReadmeUrl}/main/README.md`,
-            "main",
+            "main"
           );
           readme = await mainResponse.text();
           branch = "main";
         } catch {
-          try {
-            const masterResponse = await tryFetchWithBranch(
-              `${baseReadmeUrl}/master/README.md`,
-              "master",
-            );
-            readme = await masterResponse.text();
-            branch = "master";
-          } catch (masterError) {
-            console.error(
-              "Failed to fetch README from master branch:",
-              masterError,
-            );
-            throw new Error(
-              "Failed to fetch README from both main and master branches",
-            );
-          }
+          const masterResponse = await tryFetchWithBranch(
+            `${baseReadmeUrl}/master/README.md`,
+            "master"
+          );
+          readme = await masterResponse.text();
+          branch = "master";
         }
 
         const [meta] = await Promise.all([fetchModMeta(mod.repo)]);
-
         const processedReadme = convertImageUrls(readme, mod.repo, branch);
 
         setModData({
@@ -186,8 +174,8 @@ export function ModPageClient({ slug }: ModPageClientProps) {
           meta,
           readme: processedReadme,
         });
-      } catch (error) {
-        console.error("Error loading mod data:", error);
+      } catch {
+        // Silently handle any errors
       } finally {
         setLoading(false);
       }
