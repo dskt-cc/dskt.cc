@@ -157,9 +157,7 @@ export function ModPageClient({ slug }: ModPageClientProps) {
           );
           readme = await mainResponse.text();
           branch = "main";
-        } catch (mainError) {
-          console.error("Failed to fetch README from main branch:", mainError);
-          // Fallback to master branch
+        } catch {
           try {
             const masterResponse = await tryFetchWithBranch(
               `${baseReadmeUrl}/master/README.md`,
