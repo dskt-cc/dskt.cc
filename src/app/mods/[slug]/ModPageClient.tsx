@@ -24,7 +24,14 @@ type ImageDomainConfig = {
   domain: string;
   handler: (src: string) => {
     src: string;
-    props?: Partial<React.ComponentProps<typeof Image>>;
+    props:
+      | (Partial<React.ComponentProps<typeof Image>> & {
+          width: number;
+          height: number;
+        })
+      | {
+          fill: true;
+        };
   };
 };
 
@@ -42,24 +49,44 @@ const IMAGE_CONFIGS: ImageDomainConfig[] = [
   },
   {
     domain: "i.imgur.com",
-    handler: (src) => ({ src }),
+    handler: (src) => ({
+      src,
+      props: {
+        fill: true,
+        className: "object-contain",
+      },
+    }),
   },
   {
     domain: "private-user-images.githubusercontent.com",
     handler: (src) => ({
       src,
       props: {
+        fill: true,
         unoptimized: true,
+        className: "object-contain",
       },
     }),
   },
   {
     domain: "avatars.githubusercontent.com",
-    handler: (src) => ({ src }),
+    handler: (src) => ({
+      src,
+      props: {
+        fill: true,
+        className: "object-contain",
+      },
+    }),
   },
   {
     domain: "raw.githubusercontent.com",
-    handler: (src) => ({ src }),
+    handler: (src) => ({
+      src,
+      props: {
+        fill: true,
+        className: "object-contain",
+      },
+    }),
   },
 ] as const;
 
@@ -154,7 +181,6 @@ const CustomParagraph = ({
 
   return <p>{children}</p>;
 };
-
 const CustomImage = ({
   src,
   alt,
@@ -167,8 +193,14 @@ const CustomImage = ({
   const [error, setError] = useState(false);
   const [imageData, setImageData] = useState<{
     src: string;
-    props?: Partial<React.ComponentProps<typeof Image>>;
-  }>({ src });
+    props: Partial<React.ComponentProps<typeof Image>>;
+  }>({
+    src,
+    props: {
+      fill: true,
+      className: "object-contain",
+    },
+  });
 
   useEffect(() => {
     const loadImage = async () => {
@@ -176,7 +208,7 @@ const CustomImage = ({
         if (src.startsWith("http")) {
           const config = getImageConfig(src);
           if (config) {
-            setImageData(config.handler(src));
+            setImageData({ src, ...config.handler(src) });
             return;
           }
           setError(true);
@@ -195,7 +227,9 @@ const CustomImage = ({
             setImageData({
               src: rawUrl,
               props: {
+                fill: true,
                 priority: true,
+                className: "object-contain",
               },
             });
             return;
@@ -213,34 +247,27 @@ const CustomImage = ({
 
   if (error) return null;
 
-  const config = getImageConfig(imageData.src);
-  if (config) {
-    const { src: configuredSrc, props: configProps } = config.handler(
-      imageData.src,
-    );
+  const { src: finalSrc, props } = imageData;
+
+  // For images that use fill property
+  if (props.fill) {
     return (
-      <Image
-        src={configuredSrc}
-        alt={alt}
-        {...configProps}
-        onError={() => setError(true)}
-      />
+      <div className="relative w-full h-[400px] my-4">
+        <Image
+          src={finalSrc}
+          alt={alt}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          priority
+          onError={() => setError(true)}
+          {...props}
+        />
+      </div>
     );
   }
 
+  // For images with explicit dimensions (like badges)
   return (
-    <div className="relative w-full h-[400px] my-4">
-      <Image
-        src={imageData.src}
-        alt={alt}
-        fill
-        className="object-contain"
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        priority
-        onError={() => setError(true)}
-        {...imageData.props}
-      />
-    </div>
+    <Image src={finalSrc} alt={alt} onError={() => setError(true)} {...props} />
   );
 };
 
