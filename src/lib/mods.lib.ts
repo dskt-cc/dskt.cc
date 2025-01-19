@@ -18,14 +18,14 @@ const fetchJSON = async <T>(endpoint: string): Promise<T> => {
   }
 };
 
-const convertToRawUrl = (githubUrl: string, filename: string): string => {
+const convertToRawUrl = (githubUrl: string, filename: string, branch: string): string => {
   const matches = githubUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/);
   if (!matches) {
     throw new Error("Invalid GitHub URL");
   }
   const [, username, repo] = matches;
 
-  return `https://raw.githubusercontent.com/${username}/${repo}/main/${filename}`;
+  return `https://raw.githubusercontent.com/${username}/${repo}/${branch}/${filename}`;
 };
 
 const fetchMods = async (): Promise<Mod[]> => {
@@ -33,8 +33,19 @@ const fetchMods = async (): Promise<Mod[]> => {
 };
 
 const fetchModMeta = async (repo: string): Promise<ModMeta> => {
-  const rawUrl = convertToRawUrl(repo, "dskt.json");
-  return fetchJSON<ModMeta>(rawUrl);
+  try {
+    const mainUrl = convertToRawUrl(repo, "dskt.json", "main");
+    try {
+      return await fetchJSON<ModMeta>(mainUrl);
+    } catch (error) {
+      console.error("Failed to fetch mod metadata from main branch:", error);
+      const masterUrl = convertToRawUrl(repo, "dskt.json", "master");
+      return await fetchJSON<ModMeta>(masterUrl);
+    }
+  } catch (error) {
+    console.error("Failed to fetch mod metadata from both main and master branches:", error);
+    throw error;
+  }
 };
 
 export { fetchMods, fetchModMeta };
