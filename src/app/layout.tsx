@@ -15,82 +15,85 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: {
-      template: '%s | dskt.cc',
-      default: 'dskt.cc - Desktop Mate Modding',
-    },
-    description: "Transform your Desktop Mate experience with mods. Create, share, and discover mods for both MelonLoader and BepInEx.",
-    applicationName: "dskt.cc",
-    authors: [{ name: "dskt.cc Team" }],
-    generator: "Next.js",
-    keywords: [
-      "Desktop Mate",
-      "modding",
-      "mods",
-      "MelonLoader",
-      "BepInEx",
-      "gaming",
-      "customization",
-      "development"
+  title: {
+    template: "%s | dskt.cc",
+    default: "dskt.cc - Desktop Mate Modding",
+  },
+  description:
+    "Transform your Desktop Mate experience with mods. Create, share, and discover mods for both MelonLoader and BepInEx.",
+  applicationName: "dskt.cc",
+  authors: [{ name: "dskt.cc Team" }],
+  generator: "Next.js",
+  keywords: [
+    "Desktop Mate",
+    "modding",
+    "mods",
+    "MelonLoader",
+    "BepInEx",
+    "gaming",
+    "customization",
+    "development",
+  ],
+  creator: "dskt.cc Team",
+  publisher: "dskt.cc",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL("https://dskt.cc"),
+  openGraph: {
+    title: "dskt.cc - Desktop Mate Modding",
+    description:
+      "Transform your Desktop Mate experience with mods. Create, share, and discover mods for both MelonLoader and BepInEx.",
+    url: "https://dskt.cc",
+    siteName: "dskt.cc",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "dskt.cc - Desktop Mate Modding",
+      },
     ],
-    creator: "dskt.cc Team",
-    publisher: "dskt.cc",
-    formatDetection: {
-      email: false,
-      address: false,
-      telephone: false,
-    },
-    metadataBase: new URL('https://dskt.cc'),
-    openGraph: {
-      title: 'dskt.cc - Desktop Mate Modding',
-      description: 'Transform your Desktop Mate experience with mods. Create, share, and discover mods for both MelonLoader and BepInEx.',
-      url: 'https://dskt.cc',
-      siteName: 'dskt.cc',
-      images: [
-        {
-          url: '/og-image.png',
-          width: 1200,
-          height: 630,
-          alt: 'dskt.cc - Desktop Mate Modding',
-        },
-      ],
-      locale: 'en_US',
-      type: 'website',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: 'dskt.cc - Desktop Mate Modding',
-      description: 'Transform your Desktop Mate experience with mods. Create, share, and discover mods for both MelonLoader and BepInEx.',
-      images: ['/twitter-image.png'],
-      creator: '@dskt_cc',
-    },
-    robots: {
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "dskt.cc - Desktop Mate Modding",
+    description:
+      "Transform your Desktop Mate experience with mods. Create, share, and discover mods for both MelonLoader and BepInEx.",
+    images: ["/twitter-image.png"],
+    creator: "@dskt_cc",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
       index: true,
       follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
-    category: 'technology',
-    other: {
-      'msapplication-TileColor': '#86cecb',
-      'apple-mobile-web-app-title': 'dskt.cc',
-      'application-name': 'dskt.cc',
-    },
-  };
-  
-  export const viewport: Viewport = {
-    themeColor: '#86cecb',
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
-    colorScheme: 'dark',
-  };
+  },
+  category: "technology",
+  other: {
+    "msapplication-TileColor": "#86cecb",
+    "apple-mobile-web-app-title": "dskt.cc",
+    "application-name": "dskt.cc",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#86cecb",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  colorScheme: "dark",
+};
 
 export default function RootLayout({
   children,

@@ -4,7 +4,8 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Desktop Mate Modding",
     short_name: "dskt.cc",
-    description: "Desktop Mate modding community - Create, share, and discover mods",
+    description:
+      "Desktop Mate modding community - Create, share, and discover mods",
     start_url: "/",
     display: "standalone",
     background_color: "#0a0b0c",
