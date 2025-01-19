@@ -1,17 +1,24 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import localFont from "next/font/local";
 import { Navbar } from "@containers/Header/Navbar";
 import { Footer } from "@containers/Footer/Footer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const jbMono = localFont({
+  src: [
+    {
+      path: "fonts/jetbrainsMono/JetBrainsMono-Regular.woff2",
+    },
+    {
+      path: "fonts/jetbrainsMono/JetBrainsMono-Thin.woff2",
+    },
+    {
+      path: "fonts/jetbrainsMono/JetBrainsMono-Bold.woff2",
+    },
+    {
+      path: "fonts/jetbrainsMono/JetBrainsMono-Italic.woff2",
+    }
+  ],
 });
 
 export const metadata: Metadata = {
@@ -104,8 +111,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body
         className={`
-          ${geistSans.variable} 
-          ${geistMono.variable} 
+          ${jbMono.className}
           antialiased 
           font-sans 
           bg-background 

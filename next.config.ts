@@ -2,7 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
-  /* config options here */
   images: {
     domains: [
       "img.shields.io",
@@ -12,7 +11,7 @@ const nextConfig: NextConfig = {
       "avatars.githubusercontent.com",
       "github.com",
     ],
-    unoptimized: true, // For GitHub private images
+    unoptimized: true,
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",

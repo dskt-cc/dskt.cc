@@ -6,6 +6,8 @@ import { TbCube, TbHome, TbBrandGithub, TbBook, TbMenu2 } from "react-icons/tb";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
+import voc from "@/app/fonts/voc";
+
 export const Navbar = () => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
@@ -33,7 +35,11 @@ export const Navbar = () => {
       <nav className="container mx-auto px-4 h-16">
         <div className="flex items-center justify-between h-full">
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl font-bold text-miku-teal">dskt.cc</span>
+            <span
+              className={`text-xl font-bold text-miku-teal ${voc.className}`}
+            >
+              dskt.cc
+            </span>
           </Link>
 
           <div className="hidden md:flex items-center gap-6">
