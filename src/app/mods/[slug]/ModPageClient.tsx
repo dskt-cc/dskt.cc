@@ -34,48 +34,48 @@ const convertImageUrls = (markdown: string, repo: string): string => {
 };
 
 const CustomImage = ({
-  src,
-  alt,
-  repo,
-}: {
-  src: string;
-  alt: string;
-  repo: string;
-}) => {
-  const [error, setError] = useState(false);
-
-  if (error) return null;
-
-  if (src.includes("img.shields.io")) {
+    src,
+    alt,
+    repo,
+  }: {
+    src: string;
+    alt: string;
+    repo: string;
+  }) => {
+    const [error, setError] = useState(false);
+  
+    if (error) return null;
+  
+    if (src.includes("img.shields.io")) {
+      return (
+        <Image
+          src={src}
+          alt={alt}
+          width={124}
+          height={28}
+          className="inline-block"
+        />
+      );
+    }
+  
+    const fullImageUrl = src.startsWith("http")
+      ? src
+      : `${repo.replace("github.com", "raw.githubusercontent.com")}/main/${src}`;
+  
     return (
-      <Image
-        src={src}
-        alt={alt}
-        width={124}
-        height={28}
-        className="inline-block"
-      />
+      <div className="relative w-full h-[400px] my-8"> 
+        <Image
+          src={fullImageUrl}
+          alt={alt}
+          fill
+          className="object-contain" 
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          priority
+          onError={() => setError(true)}
+        />
+      </div>
     );
-  }
-
-  const fullImageUrl = src.startsWith("http")
-    ? src
-    : `${repo.replace("github.com", "raw.githubusercontent.com")}/main/${src}`;
-
-  return (
-    <div className="relative w-full h-[400px] my-8">
-      <Image
-        src={fullImageUrl}
-        alt={alt}
-        fill
-        className="object-contain rounded-lg border border-miku-deep/30 hover:border-miku-deep/50 transition-colors duration-200"
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        priority
-        onError={() => setError(true)}
-      />
-    </div>
-  );
-};
+  };
 
 export function ModPageClient({ slug }: ModPageClientProps) {
   const [modData, setModData] = useState<{
@@ -166,9 +166,9 @@ export function ModPageClient({ slug }: ModPageClientProps) {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-12"
+            className="mb-6"
           >
-            <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-8">
+            <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-6">
               <div className="flex-1">
                 <h1 className="text-4xl md:text-5xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-miku-teal via-miku-waterleaf to-miku-pink">
                   {mod.name}
