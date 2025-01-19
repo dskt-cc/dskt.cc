@@ -18,7 +18,11 @@ const fetchJSON = async <T>(endpoint: string): Promise<T> => {
   }
 };
 
-const convertToRawUrl = (githubUrl: string, filename: string, branch: string): string => {
+const convertToRawUrl = (
+  githubUrl: string,
+  filename: string,
+  branch: string,
+): string => {
   const matches = githubUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/);
   if (!matches) {
     throw new Error("Invalid GitHub URL");
@@ -43,7 +47,10 @@ const fetchModMeta = async (repo: string): Promise<ModMeta> => {
       return await fetchJSON<ModMeta>(masterUrl);
     }
   } catch (error) {
-    console.error("Failed to fetch mod metadata from both main and master branches:", error);
+    console.error(
+      "Failed to fetch mod metadata from both main and master branches:",
+      error,
+    );
     throw error;
   }
 };

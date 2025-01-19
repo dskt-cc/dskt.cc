@@ -23,11 +23,24 @@ interface ModPageClientProps {
   slug: string;
 }
 
-const convertImageUrls = (markdown: string, repo: string): string => {
+const tryFetchWithBranch = async (url: string, branch: string) => {
+  const branchUrl = url.replace("/main/", `/${branch}/`);
+  const response = await fetch(branchUrl);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  return response;
+};
+
+const convertImageUrls = (
+  markdown: string,
+  repo: string,
+  branch: string,
+): string => {
   return markdown.replace(
     /!\[(.*?)\]\(((?!http).*?)\)/g,
     (match, alt, path) => {
-      const rawUrl = `${repo.replace("github.com", "raw.githubusercontent.com")}/main/${path}`;
+      const rawUrl = `${repo.replace("github.com", "raw.githubusercontent.com")}/${branch}/${path}`;
       return `![${alt}](${rawUrl})`;
     },
   );
@@ -43,6 +56,35 @@ const CustomImage = ({
   repo: string;
 }) => {
   const [error, setError] = useState(false);
+  const [imageSrc, setImageSrc] = useState(src);
+
+  useEffect(() => {
+    const loadImage = async () => {
+      if (src.includes("img.shields.io")) return;
+      if (src.startsWith("http")) return;
+
+      const mainUrl = `${repo.replace("github.com", "raw.githubusercontent.com")}/main/${src}`;
+      const masterUrl = `${repo.replace("github.com", "raw.githubusercontent.com")}/master/${src}`;
+
+      try {
+        const mainRes = await fetch(mainUrl);
+        if (mainRes.ok) {
+          setImageSrc(mainUrl);
+          return;
+        }
+        const masterRes = await fetch(masterUrl);
+        if (masterRes.ok) {
+          setImageSrc(masterUrl);
+          return;
+        }
+        setError(true);
+      } catch {
+        setError(true);
+      }
+    };
+
+    loadImage();
+  }, [src, repo]);
 
   if (error) return null;
 
@@ -58,14 +100,10 @@ const CustomImage = ({
     );
   }
 
-  const fullImageUrl = src.startsWith("http")
-    ? src
-    : `${repo.replace("github.com", "raw.githubusercontent.com")}/main/${src}`;
-
   return (
-    <div className="relative w-full h-[400px] my-8">
+    <div className="relative w-full h-[400px] my-4">
       <Image
-        src={fullImageUrl}
+        src={imageSrc}
         alt={alt}
         fill
         className="object-contain"
@@ -104,18 +142,45 @@ export function ModPageClient({ slug }: ModPageClientProps) {
           return;
         }
 
-        const readmeUrl =
-          mod.repo
-            .replace("github.com", "raw.githubusercontent.com")
-            .replace(/\/$/, "") + "/main/README.md";
+        const baseReadmeUrl = mod.repo
+          .replace("github.com", "raw.githubusercontent.com")
+          .replace(/\/$/, "");
 
-        const [meta, readmeResponse] = await Promise.all([
-          fetchModMeta(mod.repo),
-          fetch(readmeUrl),
-        ]);
+        let readme: string;
+        let branch: string;
 
-        const readme = await readmeResponse.text();
-        const processedReadme = convertImageUrls(readme, mod.repo);
+        try {
+          // Try main branch first
+          const mainResponse = await tryFetchWithBranch(
+            `${baseReadmeUrl}/main/README.md`,
+            "main",
+          );
+          readme = await mainResponse.text();
+          branch = "main";
+        } catch (mainError) {
+          console.error("Failed to fetch README from main branch:", mainError);
+          // Fallback to master branch
+          try {
+            const masterResponse = await tryFetchWithBranch(
+              `${baseReadmeUrl}/master/README.md`,
+              "master",
+            );
+            readme = await masterResponse.text();
+            branch = "master";
+          } catch (masterError) {
+            console.error(
+              "Failed to fetch README from master branch:",
+              masterError,
+            );
+            throw new Error(
+              "Failed to fetch README from both main and master branches",
+            );
+          }
+        }
+
+        const [meta] = await Promise.all([fetchModMeta(mod.repo)]);
+
+        const processedReadme = convertImageUrls(readme, mod.repo, branch);
 
         setModData({
           mod,
@@ -170,7 +235,7 @@ export function ModPageClient({ slug }: ModPageClientProps) {
           >
             <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-6">
               <div className="flex-1">
-                <h1 className="text-4xl md:text-5xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-miku-teal via-miku-waterleaf to-miku-pink">
+                <h1 className="text-4xl md:text-5xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-miku-deep via-miku-teal to-miku-waterleaf">
                   {mod.name}
                 </h1>
                 <p className="text-lg text-miku-light">{meta.description}</p>
@@ -222,7 +287,7 @@ export function ModPageClient({ slug }: ModPageClientProps) {
             </div>
           </motion.div>
 
-          <div className="prose prose-invert prose-lg max-w-none">
+          <div className="prose prose-invert prose-lg max-w-none [&>*:first-child]:mt-0">
             <ReactMarkdown
               rehypePlugins={[rehypeRaw, rehypeSanitize]}
               components={{
