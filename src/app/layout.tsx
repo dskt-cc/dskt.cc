@@ -17,7 +17,7 @@ const jbMono = localFont({
     },
     {
       path: "fonts/jetbrainsMono/JetBrainsMono-Italic.woff2",
-    }
+    },
   ],
 });
 
