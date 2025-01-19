@@ -1,9 +1,33 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { DiscordButton } from "@/components/Button/DiscordButton";
 import { GradientButton } from "@/components/Button/GradientButton";
+import { LandingCard } from "@/components/Card/LandingCard";
 import { TbDownload, TbBook, TbCube } from "react-icons/tb";
+
+const LANDING_CARDS = [
+  {
+    title: "Getting Started",
+    description: "New to modding? Learn how to install MelonLoader or BepInEx and get your first mods running in minutes.",
+    href: "/docs/getting-started/installation",
+    icon: <TbDownload />,
+    buttonText: "Installation Guide"
+  },
+  {
+    title: "Create Mods",
+    description: "Ready to create? Dive into our documentation covering both MelonLoader and BepInEx mod development.",
+    href: "/docs/creating-mods/setup",
+    icon: <TbBook />,
+    buttonText: "Read the Docs"
+  },
+  {
+    title: "Submit Mods",
+    description: "Built something amazing? Learn how to share your creation with the Desktop Mate community.",
+    href: "/docs/submitting-mods/guidelines",
+    icon: <TbCube />,
+    buttonText: "Publishing Guide"
+  }
+];
 
 export default function HomePage() {
   return (
@@ -15,65 +39,38 @@ export default function HomePage() {
           className="max-w-4xl mx-auto text-center"
         >
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-green-400 to-blue-500 text-transparent bg-clip-text">
-            Enhance Your Desktop Mate
+            Desktop Mate Modding
           </h1>
           <p className="text-xl text-gray-400 mb-12">
-            Discover and install mods to customize your Desktop Mate experience.
-            Join our community of creators and enthusiasts!
+            Transform your Desktop Mate experience with mods. Whether you prefer MelonLoader 
+            or BepInEx, we&apos;ve got everything you need to get started, create, and share mods 
+            with the community.
           </p>
 
           <div className="flex flex-wrap justify-center gap-4 mb-16">
-            <DiscordButton />
             <GradientButton href="/mods">
               <TbCube />
               Browse Mods
             </GradientButton>
           </div>
 
-          {/* @TODO: make these card things components */}
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="p-6 bg-gray-800/50 rounded-xl border border-gray-700/50">
-              <h3 className="text-xl font-semibold mb-4 text-gray-200">
-                Getting Started
-              </h3>
-              <p className="text-gray-400 mb-4">
-                New to modding? Follow our simple installation guide to get
-                started.
-              </p>
-              <GradientButton href="/docs/getting-started" gradient="secondary">
-                <TbDownload />
-                Installation Guide
-              </GradientButton>
-            </div>
-
-            <div className="p-6 bg-gray-800/50 rounded-xl border border-gray-700/50">
-              <h3 className="text-xl font-semibold mb-4 text-gray-200">
-                Create Mods
-              </h3>
-              <p className="text-gray-400 mb-4">
-                Learn how to create and share your own mods with our
-                documentation.
-              </p>
-              <GradientButton href="/docs/creating-mods" gradient="secondary">
-                <TbBook />
-                Read the Docs
-              </GradientButton>
-            </div>
-
-            <div className="p-6 bg-gray-800/50 rounded-xl border border-gray-700/50">
-              <h3 className="text-xl font-semibold mb-4 text-gray-200">
-                Submit Mods
-              </h3>
-              <p className="text-gray-400 mb-4">
-                Created something cool? Share it with the community through our
-                repo.
-              </p>
-              <GradientButton href="/docs/submitting-mods" gradient="secondary">
-                <TbCube />
-                Submit Your Mod
-              </GradientButton>
-            </div>
+            {LANDING_CARDS.map((card) => (
+              <LandingCard
+                key={card.title}
+                title={card.title}
+                description={card.description}
+                href={card.href}
+                icon={card.icon}
+                buttonText={card.buttonText}
+              />
+            ))}
           </div>
+
+          <p className="mt-16 text-sm text-gray-500">
+            Desktop Mate modding supports both MelonLoader and BepInEx mod loaders. 
+            Choose your preferred platform and start customizing today!
+          </p>
         </motion.div>
       </div>
     </div>
