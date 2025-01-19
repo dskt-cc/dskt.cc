@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | dskt.cc",
+    template: "%s",
     default: "dskt.cc - Desktop Mate Modding",
   },
   description:
