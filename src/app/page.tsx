@@ -35,13 +35,13 @@ const LANDING_CARDS = [
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-miku-gray to-black">
-      <div className="container mx-auto px-4 pt-32 pb-16">
+      <div className="container mx-auto px-4 pt-16 pb-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="max-w-4xl mx-auto text-center"
         >
-          <h1 className="text-4xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-miku-deep via-miku-teal to-miku-waterleaf text-transparent bg-clip-text">
+          <h1 className="text-4xl py-2 md:text-6xl font-bold mb-8 bg-gradient-to-r from-miku-deep via-miku-teal to-miku-waterleaf text-transparent bg-clip-text">
             Desktop Mate Modding
           </h1>
           <p className="text-xl text-miku-light mb-12 leading-relaxed">
