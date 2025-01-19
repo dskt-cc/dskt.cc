@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { TbCube, TbHome, TbBrandGithub, TbBook } from "react-icons/tb";
+import { TbCube, TbHome, TbBrandGithub, TbBook, TbMenu2 } from "react-icons/tb";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export const Navbar = () => {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
     {
@@ -50,7 +53,7 @@ export const Navbar = () => {
             ))}
           </div>
 
-          <div className="flex items-center">
+          <div className="flex items-center gap-4">
             <Link
               href="https://github.com/dskt-cc"
               target="_blank"
@@ -60,9 +63,44 @@ export const Navbar = () => {
               <TbBrandGithub className="text-xl" />
               <span className="hidden sm:inline">GitHub</span>
             </Link>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="md:hidden p-2 text-miku-light hover:text-miku-teal transition-colors duration-200"
+            >
+              <TbMenu2 className="text-xl" />
+            </button>
           </div>
         </div>
       </nav>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="md:hidden border-t border-miku-deep/30"
+          >
+            <div className="container mx-auto px-4 py-4 space-y-2">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  href={item.path}
+                  onClick={() => setIsOpen(false)}
+                  className={`flex items-center gap-3 p-3 rounded-lg ${
+                    pathname === item.path
+                      ? "text-miku-teal bg-miku-deep/20"
+                      : "text-miku-light hover:bg-miku-deep/10"
+                  }`}
+                >
+                  {item.icon}
+                  <span>{item.name}</span>
+                </Link>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };
