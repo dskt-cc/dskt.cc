@@ -21,7 +21,8 @@ import {
 } from "react-icons/hi";
 
 interface ModPageClientProps {
-  slug: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  slug: any; // todo: same weird type error
 }
 
 const convertImageUrls = (markdown: string, repo: string): string => {
