@@ -1,4 +1,4 @@
-export type ModType = "MelonLoader" | "BepInEx";
+export type ModType = "MelonLoader" | "BepInEx" | "Both";
 
 export enum ModCategory {
     Performance = "Performance",

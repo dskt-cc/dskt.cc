@@ -25,7 +25,7 @@ function FooterContent() {
           </p>
 
           <p className="text-sm text-gray-400">
-            Not affiliated with Desktop Mate
+            Not affiliated with Desktop Mate and/or infiniteloop
           </p>
 
           <div className="flex items-center gap-2 text-gray-400 bg-purple-500/10 px-4 py-2 rounded-lg">
