@@ -4,7 +4,7 @@ import { ModPageClient } from "./ModPageClient";
 
 type Props = {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  params: { slug: any }; // @todo: same weird type error
+  params: any; // @todo: same weird type error
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   searchParams: any; // @todo: cope
 };
