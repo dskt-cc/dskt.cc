@@ -3,19 +3,12 @@ import type { Mod, ModMeta } from "@types";
 const GITHUB_RAW_URL = "https://raw.githubusercontent.com/dskt-cc/mods/main";
 
 const fetchJSON = async <T>(endpoint: string): Promise<T> => {
-  try {
-    const response = await fetch(endpoint);
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const text = await response.text();
-    return JSON.parse(text);
-  } catch (error) {
-    console.error(`Error fetching ${endpoint}:`, error);
-    throw error;
+  const response = await fetch(endpoint);
+  if (!response.ok) {
+    return Promise.reject();
   }
+  const text = await response.text();
+  return JSON.parse(text);
 };
 
 const convertToRawUrl = (

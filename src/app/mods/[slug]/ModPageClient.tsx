@@ -58,11 +58,38 @@ const CustomImage = ({
   const [error, setError] = useState(false);
   const [imageSrc, setImageSrc] = useState(src);
 
+  const WHITELISTED_DOMAINS = [
+    'img.shields.io',
+    'i.imgur.com',
+    'raw.githubusercontent.com'
+  ];
+
+  const isWhitelisted = (url: string): boolean => {
+    if (!url.startsWith('http')) return true; // Local images are allowed
+    return WHITELISTED_DOMAINS.some(domain => url.includes(domain));
+  };
+
   useEffect(() => {
     const loadImage = async () => {
-      if (src.includes("img.shields.io")) return;
-      if (src.includes("i.imgur.com")) return;
-      if (src.startsWith("http")) return;
+      if (!isWhitelisted(src)) {
+        setError(true);
+        return;
+      }
+
+      if (src.includes("img.shields.io")) {
+        setImageSrc(src);
+        return;
+      }
+
+      if (src.includes("i.imgur.com")) {
+        setImageSrc(src);
+        return;
+      }
+
+      if (src.startsWith("http")) {
+        setError(true);
+        return;
+      }
 
       const mainUrl = `${repo.replace("github.com", "raw.githubusercontent.com")}/main/${src}`;
       const masterUrl = `${repo.replace("github.com", "raw.githubusercontent.com")}/master/${src}`;
@@ -87,7 +114,7 @@ const CustomImage = ({
     loadImage();
   }, [src, repo]);
 
-  if (error) return null;
+  if (error || !isWhitelisted(src)) return null;
 
   if (src.includes("img.shields.io")) {
     return (
@@ -102,7 +129,7 @@ const CustomImage = ({
   }
 
   return (
-    <div className="relative w-full h-[400px] my-4 mb-4">
+    <div className="relative w-full h-[400px] my-4">
       <Image
         src={imageSrc}
         alt={alt}
