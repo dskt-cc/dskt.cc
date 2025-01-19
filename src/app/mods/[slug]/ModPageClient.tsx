@@ -252,7 +252,7 @@ const CustomImage = ({
   // For images that use fill property
   if (props.fill) {
     return (
-      <div className="relative w-full h-[400px] my-4">
+      <div className="relative w-full h-[400px] my-4 mb-4">
         <Image
           src={finalSrc}
           alt={alt}
@@ -267,7 +267,7 @@ const CustomImage = ({
 
   // For images with explicit dimensions (like badges)
   return (
-    <Image src={finalSrc} alt={alt} onError={() => setError(true)} {...props} />
+    <Image className="mb-4" src={finalSrc} alt={alt} onError={() => setError(true)} {...props} />
   );
 };
 
