@@ -21,10 +21,10 @@ const fetchJSON = async <T>(endpoint: string): Promise<T> => {
 const convertToRawUrl = (githubUrl: string, filename: string): string => {
   const matches = githubUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/);
   if (!matches) {
-    throw new Error('Invalid GitHub URL');
+    throw new Error("Invalid GitHub URL");
   }
   const [, username, repo] = matches;
-  
+
   return `https://raw.githubusercontent.com/${username}/${repo}/main/${filename}`;
 };
 
@@ -33,7 +33,7 @@ const fetchMods = async (): Promise<Mod[]> => {
 };
 
 const fetchModMeta = async (repo: string): Promise<ModMeta> => {
-  const rawUrl = convertToRawUrl(repo, 'dskt.json');
+  const rawUrl = convertToRawUrl(repo, "dskt.json");
   return fetchJSON<ModMeta>(rawUrl);
 };
 

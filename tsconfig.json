@@ -21,7 +21,7 @@
     "paths": {
       "@containers/*": ["./src/containers/*"],
       "@components/*": ["./src/components/*"],
-      "@types": ["./src/types/types.d.ts"], 
+      "@types": ["./src/types/types.d.ts"],
       "@lib/*": ["./src/lib/*"],
       "@/*": ["./src/*"]
     }

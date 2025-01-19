@@ -1,38 +1,36 @@
-import { use } from 'react';
-import { fetchMods, fetchModMeta } from '@lib/mods.lib';
-import { ModPageClient } from './ModPageClient';
+import { use } from "react";
+import { fetchMods, fetchModMeta } from "@lib/mods.lib";
+import { ModPageClient } from "./ModPageClient";
 
 type Props = {
-    params: { slug: string };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    searchParams: any; // @todo: cope
+  params: { slug: string };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  searchParams: any; // @todo: cope
 };
 
 export default function ModPage(props: Props) {
-    const params = use(Promise.resolve(props.params));
-    const { slug } = params;
+  const params = use(Promise.resolve(props.params));
+  const { slug } = params;
 
-    return <ModPageClient slug={slug} />;
+  return <ModPageClient slug={slug} />;
 }
 
 export async function generateMetadata({ params }: Props) {
-    const { slug } = params;
-    try {
-        const mods = await fetchMods();
-        const mod = mods.find(m => 
-            m.name.toLowerCase() === slug.toLowerCase()
-        );
-        
-        if (!mod) return { title: 'Mod Not Found' };
+  const { slug } = params;
+  try {
+    const mods = await fetchMods();
+    const mod = mods.find((m) => m.name.toLowerCase() === slug.toLowerCase());
 
-        const meta = await fetchModMeta(mod.repo);
+    if (!mod) return { title: "Mod Not Found" };
 
-        return {
-            title: `${mod.name} | dskt.cc`,
-            description: meta.description,
-        };
-    } catch (error) {
-        console.error('Metadata generation error:', error);
-        return { title: 'dskt.cc' };
-    }
+    const meta = await fetchModMeta(mod.repo);
+
+    return {
+      title: `${mod.name} | dskt.cc`,
+      description: meta.description,
+    };
+  } catch (error) {
+    console.error("Metadata generation error:", error);
+    return { title: "dskt.cc" };
+  }
 }
