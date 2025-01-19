@@ -63,21 +63,100 @@ const config: Config = {
           css: {
             maxWidth: "none",
             color: "#bec8d1",
-            "h1, h2, h3, h4": {
+            h1: {
               color: "#86cecb",
+              fontWeight: "700",
+            },
+            h2: {
+              color: "#86cecb",
+              fontWeight: "600",
+            },
+            h3: {
+              color: "#86cecb",
+              fontWeight: "600",
+            },
+            h4: {
+              color: "#86cecb",
+              fontWeight: "600",
             },
             a: {
               color: "#e12885",
-              fontWeight: "bold",
+              fontWeight: "600",
+              textDecoration: "none",
               "&:hover": {
+                color: "#86cecb",
+                textDecoration: "underline",
+              },
+            },
+            strong: {
+              color: "#a1e2e8",
+              fontWeight: "600",
+            },
+            code: {
+              color: "#e12885",
+              backgroundColor: "#373b3e",
+              padding: "0.2rem 0.4rem",
+              borderRadius: "0.375rem",
+              fontWeight: "500",
+              "&::before": {
+                content: '""',
+              },
+              "&::after": {
+                content: '""',
+              },
+            },
+            "code::before": {
+              content: '""',
+            },
+            "code::after": {
+              content: '""',
+            },
+            pre: {
+              backgroundColor: "#373b3e",
+              color: "#bec8d1",
+              code: {
+                backgroundColor: "transparent",
+                color: "inherit",
+                padding: "0",
+                fontWeight: "400",
+              },
+            },
+            ul: {
+              listStyleType: "disc",
+              color: "#bec8d1",
+            },
+            "ul > li": {
+              color: "#bec8d1",
+              "&::marker": {
                 color: "#86cecb",
               },
             },
-            code: {
-              color: "#bec8d1",
-              backgroundColor: "#373b3e",
-              padding: "0.3rem 0.5rem",
-              borderRadius: "0.375rem",
+            "ul > li::marker": {
+              color: "#86cecb",
+            },
+            hr: {
+              borderColor: "#137a7f",
+            },
+            blockquote: {
+              color: "#a1e2e8",
+              borderLeftColor: "#137a7f",
+              fontStyle: "italic",
+            },
+            "blockquote p:first-of-type::before": {
+              content: '""',
+            },
+            "blockquote p:last-of-type::after": {
+              content: '""',
+            },
+            em: {
+              color: "#a1e2e8",
+            },
+            thead: {
+              color: "#86cecb",
+              borderBottomColor: "#137a7f",
+            },
+            "tbody tr": {
+              borderBottomColor: "#137a7f",
             },
           },
         },
