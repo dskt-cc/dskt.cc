@@ -5,23 +5,25 @@ import { DocsLayout } from "@containers/Docs/DocsLayout";
 import { MDXContent } from "@containers/Docs/MDXContent";
 import { notFound, redirect } from "next/navigation";
 
+// @TODO: fix typing errors
 type Props = {
-  params: any; // Temporarily use 'any' to bypass type checking
-  searchParams: any; // Temporarily use 'any' to bypass type checking
+  params: any;
+  searchParams: any;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const resolvedParams = await Promise.resolve(params);
   try {
-    if (params.slug.length === 1) {
-      const sectionDocs = await getSectionDocs(params.slug[0]);
+    if (resolvedParams.slug.length === 1) {
+      const sectionDocs = await getSectionDocs(resolvedParams.slug[0]);
       if (sectionDocs.length > 0) {
         return {
           title: `${sectionDocs[0].title} | Documentation`,
           description: sectionDocs[0].description || "",
         };
       }
-    } else if (params.slug.length === 2) {
-      const [section, docSlug] = params.slug;
+    } else if (resolvedParams.slug.length === 2) {
+      const [section, docSlug] = resolvedParams.slug;
       const { frontMatter } = await getDocBySlug(section, docSlug);
       return {
         title: `${frontMatter.title} | Documentation`,
@@ -40,9 +42,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function DocPage({ params }: Props) {
+  const resolvedParams = await Promise.resolve(params);
   try {
-    if (params.slug.length === 1) {
-      const section = params.slug[0];
+    if (resolvedParams.slug.length === 1) {
+      const section = resolvedParams.slug[0];
       const sectionDocs = await getSectionDocs(section);
 
       if (sectionDocs.length > 0) {
@@ -51,15 +54,24 @@ export default async function DocPage({ params }: Props) {
       return notFound();
     }
 
-    if (params.slug.length === 2) {
-      const [section, docSlug] = params.slug;
+    if (resolvedParams.slug.length === 2) {
+      const [section, docSlug] = resolvedParams.slug;
       const { mdxSource, frontMatter } = await getDocBySlug(section, docSlug);
 
       return (
         <DocsLayout>
           <div className="max-w-4xl">
-            <h1 className="text-4xl font-bold mb-6">{frontMatter.title}</h1>
-            <MDXContent source={mdxSource} />
+            <h1 className="text-4xl font-bold mb-6 bg-gradient-to-r from-miku-teal via-miku-waterleaf to-miku-pink text-transparent bg-clip-text">
+              {frontMatter.title}
+            </h1>
+            {frontMatter.description && (
+              <p className="text-lg text-miku-light/90 mb-8">
+                {frontMatter.description}
+              </p>
+            )}
+            <div className="prose prose-invert prose-miku max-w-none">
+              <MDXContent source={mdxSource} />
+            </div>
           </div>
         </DocsLayout>
       );

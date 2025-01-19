@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { Mod, ModType } from "@types";
 import { fetchMods } from "@lib/mods.lib";
 import { ModCard } from "@components/Card/ModCard";
+import { SkeletonModCard } from "@components/Card/SkeletonModCard";
 import { TbMelon } from "react-icons/tb";
 import { BiPackage, BiSolidPackage } from "react-icons/bi";
 import { motion, AnimatePresence } from "framer-motion";
@@ -35,38 +36,35 @@ export default function ModsPage() {
       type: "All" as const,
       icon: null,
       label: "All",
-      colors: "bg-white/10 shadow-white/5",
+      colors: "from-miku-deep via-miku-teal to-miku-waterleaf",
     },
     {
       type: "MelonLoader" as const,
       icon: <TbMelon className="text-lg" />,
       label: "MelonLoader",
-      colors: "from-green-500 to-green-600 shadow-green-500/20",
+      colors: "from-miku-aquamarine via-miku-waterleaf to-miku-teal",
     },
     {
       type: "BepInEx" as const,
       icon: <BiPackage className="text-lg" />,
       label: "BepInEx",
-      colors: "from-purple-500 to-purple-600 shadow-purple-500/20",
+      colors: "from-miku-deep via-miku-teal to-miku-waterleaf",
     },
     {
       type: "Both" as const,
       icon: <BiSolidPackage className="text-lg" />,
       label: "Both",
-      colors: "from-blue-500 to-blue-600 shadow-blue-500/20",
+      colors: "from-miku-teal via-miku-waterleaf to-miku-aquamarine",
     },
   ];
 
   const renderContent = () => {
     if (loading) {
       return (
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin" />
-            <div className="text-lg text-gray-300 font-medium">
-              Loading mods...
-            </div>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <SkeletonModCard key={i} />
+          ))}
         </div>
       );
     }
@@ -74,7 +72,7 @@ export default function ModsPage() {
     if (error) {
       return (
         <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="bg-red-500/10 text-red-400 px-6 py-4 rounded-lg border border-red-500/20">
+          <div className="bg-red-500/10 text-red-400 px-6 py-4 rounded-lg border border-red-500/20 backdrop-blur-sm">
             {error}
           </div>
         </div>
@@ -84,7 +82,7 @@ export default function ModsPage() {
     if (mods.length === 0) {
       return (
         <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="bg-gray-800/50 text-gray-400 px-6 py-4 rounded-lg border border-gray-700/50">
+          <div className="bg-miku-gray/50 text-miku-light px-6 py-4 rounded-lg border border-miku-deep/30 backdrop-blur-sm">
             No mods available
           </div>
         </div>
@@ -120,13 +118,13 @@ export default function ModsPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-b from-gray-900 to-black">
+    <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-b from-miku-gray to-black">
       <div className="container mx-auto px-4 py-12">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500"
+            className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-miku-deep via-miku-teal to-miku-waterleaf"
           >
             Available Mods
           </motion.h1>
@@ -141,11 +139,16 @@ export default function ModsPage() {
               <button
                 key={type}
                 onClick={() => setSelectedType(type)}
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-lg transition-all duration-200 ${
-                  selectedType === type
-                    ? `bg-gradient-to-r ${colors} text-white shadow-lg scale-105`
-                    : "bg-gray-800/50 text-gray-400 hover:bg-gray-800 hover:scale-105"
-                }`}
+                className={`
+                  flex items-center gap-2 px-6 py-2.5 rounded-lg 
+                  transition-all duration-200 
+                  backdrop-blur-sm
+                  ${
+                    selectedType === type
+                      ? `bg-gradient-to-r ${colors} text-white shadow-lg shadow-miku-teal/20 scale-105`
+                      : `bg-miku-gray/50 text-miku-light hover:bg-miku-deep/20 hover:scale-105`
+                  }
+                `}
               >
                 {icon} {label}
               </button>

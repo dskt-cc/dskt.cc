@@ -29,14 +29,14 @@ export function DocsLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black">
+    <div className="min-h-screen bg-gradient-to-b from-miku-gray to-black">
       <div className="flex container mx-auto px-4 pt-24 pb-16">
         <aside className="w-64 flex-shrink-0">
           <nav className="space-y-8 sticky top-24">
             {Object.entries(DOCS_STRUCTURE).map(
               ([section, { title, items }]) => (
                 <div key={section}>
-                  <h3 className="text-sm font-semibold text-gray-200 uppercase tracking-wider mb-3">
+                  <h3 className="text-sm font-semibold text-miku-teal uppercase tracking-wider mb-3">
                     {title}
                   </h3>
                   <ul className="space-y-2">
@@ -44,10 +44,10 @@ export function DocsLayout({ children }: { children: React.ReactNode }) {
                       <li key={item.slug}>
                         <Link
                           href={`/docs/${section}/${item.slug}`}
-                          className={`block px-3 py-2 rounded-lg text-sm ${
+                          className={`block px-3 py-2 rounded-lg text-sm transition-all duration-200 ${
                             pathname === `/docs/${section}/${item.slug}`
-                              ? "bg-purple-500/10 text-purple-400"
-                              : "text-gray-400 hover:text-gray-300"
+                              ? "bg-miku-deep/20 text-miku-teal"
+                              : "text-miku-light hover:text-miku-waterleaf hover:bg-miku-deep/10"
                           }`}
                         >
                           {item.title}
@@ -60,7 +60,7 @@ export function DocsLayout({ children }: { children: React.ReactNode }) {
             )}
           </nav>
         </aside>
-        <main className="flex-1 ml-8">{children}</main>
+        <main className="flex-1 ml-8 prose prose-invert">{children}</main>
       </div>
     </div>
   );

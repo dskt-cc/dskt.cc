@@ -7,23 +7,38 @@ interface GradientButtonProps {
   href: string;
   children: React.ReactNode;
   gradient?: "primary" | "secondary";
+  className?: string;
 }
 
 export const GradientButton = ({
   href,
   children,
   gradient = "primary",
+  className = "",
 }: GradientButtonProps) => {
   const gradientClasses = {
-    primary: "from-green-400 to-blue-500",
-    secondary: "from-purple-400 to-pink-500",
+    primary: "from-miku-deep via-miku-teal to-miku-waterleaf",
+    secondary: "from-miku-deep via-miku-teal to-miku-waterleaf",
   };
 
   return (
-    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+    <motion.div
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className={className}
+    >
       <Link
         href={href}
-        className={`inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r ${gradientClasses[gradient]} text-white rounded-lg`}
+        className={`
+          inline-flex items-center gap-2 px-6 py-3 
+          bg-gradient-to-r ${gradientClasses[gradient]} 
+          text-white rounded-lg 
+          shadow-lg shadow-miku-deep/20
+          hover:shadow-miku-teal/20 
+          transition-all duration-200
+          font-medium
+          hover:brightness-110
+        `}
       >
         {children}
       </Link>

@@ -11,7 +11,6 @@ import type { Mod, ModMeta } from "@types";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
-
 import { ModSlugCard } from "@components/Card/ModSlugCard";
 import {
   HiOutlineUser,
@@ -21,8 +20,7 @@ import {
 } from "react-icons/hi";
 
 interface ModPageClientProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  slug: any; // todo: same weird type error
+  slug: string;
 }
 
 const convertImageUrls = (markdown: string, repo: string): string => {
@@ -70,7 +68,7 @@ const CustomImage = ({
         src={fullImageUrl}
         alt={alt}
         fill
-        className="object-contain rounded-lg border border-gray-700"
+        className="object-contain rounded-lg border border-miku-deep/30 hover:border-miku-deep/50 transition-colors duration-200"
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         priority
         onError={() => setError(true)}
@@ -136,15 +134,18 @@ export function ModPageClient({ slug }: ModPageClientProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black pt-24">
+      <div className="min-h-screen bg-gradient-to-b from-miku-gray to-black pt-24">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="animate-pulse space-y-4">
-              <div className="h-12 bg-gray-800/50 rounded-lg w-2/3"></div>
-              <div className="h-6 bg-gray-800/50 rounded-lg w-1/2"></div>
+              <div className="h-12 bg-miku-deep/20 rounded-lg w-2/3"></div>
+              <div className="h-6 bg-miku-deep/20 rounded-lg w-1/2"></div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[...Array(4)].map((_, i) => (
-                  <div key={i} className="h-24 bg-gray-800/50 rounded-lg"></div>
+                  <div
+                    key={i}
+                    className="h-24 bg-miku-deep/20 rounded-lg"
+                  ></div>
                 ))}
               </div>
             </div>
@@ -159,7 +160,7 @@ export function ModPageClient({ slug }: ModPageClientProps) {
   const { mod, meta, readme } = modData;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black pt-24">
+    <div className="min-h-screen bg-gradient-to-b from-miku-gray to-black pt-24">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <motion.div
@@ -169,17 +170,17 @@ export function ModPageClient({ slug }: ModPageClientProps) {
           >
             <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-8">
               <div className="flex-1">
-                <h1 className="text-4xl md:text-5xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                <h1 className="text-4xl md:text-5xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-miku-teal via-miku-waterleaf to-miku-pink">
                   {mod.name}
                 </h1>
-                <p className="text-lg text-gray-300">{meta.description}</p>
+                <p className="text-lg text-miku-light">{meta.description}</p>
               </div>
               <div className="flex gap-3 md:self-center">
                 <Link
                   href={`${mod.repo}/releases/latest`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-5 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-all hover:scale-105"
+                  className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-miku-teal to-miku-waterleaf hover:from-miku-waterleaf hover:to-miku-teal text-white rounded-lg transition-all duration-200 hover:scale-105 shadow-lg shadow-miku-teal/20"
                 >
                   <TbDownload size={20} />
                   <span>Download</span>
@@ -188,7 +189,7 @@ export function ModPageClient({ slug }: ModPageClientProps) {
                   href={mod.repo}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-6 py-2.5 bg-gray-700/50 hover:bg-gray-700 text-gray-200 rounded-lg transition-all hover:scale-105"
+                  className="flex items-center gap-2 px-6 py-2.5 bg-miku-deep/20 hover:bg-miku-deep/30 text-miku-light rounded-lg transition-all duration-200 hover:scale-105 border border-miku-deep/30 hover:border-miku-deep/50"
                 >
                   <TbBrandGithub size={20} />
                   <span>GitHub</span>
@@ -200,23 +201,23 @@ export function ModPageClient({ slug }: ModPageClientProps) {
               <ModSlugCard
                 title="Author"
                 value={meta.author}
-                icon={<HiOutlineUser />}
+                icon={<HiOutlineUser className="text-miku-waterleaf" />}
                 isAuthor
               />
               <ModSlugCard
                 title="Version"
                 value={meta.version}
-                icon={<HiOutlineTag />}
+                icon={<HiOutlineTag className="text-miku-teal" />}
               />
               <ModSlugCard
                 title="Type"
                 value={meta.type}
-                icon={<HiOutlineCube />}
+                icon={<HiOutlineCube className="text-miku-pink" />}
               />
               <ModSlugCard
                 title="Categories"
                 value={meta.category}
-                icon={<HiOutlineCollection />}
+                icon={<HiOutlineCollection className="text-miku-aquamarine" />}
               />
             </div>
           </motion.div>
@@ -239,7 +240,7 @@ export function ModPageClient({ slug }: ModPageClientProps) {
                   href ? (
                     <Link
                       href={href}
-                      className="text-purple-400 hover:text-purple-300 transition-colors"
+                      className="text-miku-teal hover:text-miku-waterleaf transition-colors duration-200"
                       target={href.startsWith("http") ? "_blank" : undefined}
                       rel={
                         href.startsWith("http")

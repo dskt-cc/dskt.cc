@@ -3,18 +3,52 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0b0c;
+  --foreground: #bec8d1;
 }
 
-[data-theme="dark"],
-:root[data-theme="dark"] {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+::-webkit-scrollbar-track {
+  background: #373b3e30; /* miku-gray with transparency */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #86cecb40; /* miku-teal with transparency */
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #86cecb60; /* miku-teal with more opacity on hover */
+}
+
+/* Base styles */
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus outline */
+:focus-visible {
+  @apply outline-2 outline-offset-2 outline-miku-teal/50;
+}
+
+/* Selection color */
+::selection {
+  @apply bg-miku-teal/30 text-miku-light;
+}
+
+/* Link underline animation */
+.link-underline {
+  @apply relative after:absolute after:bottom-0 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-miku-teal after:transition-transform after:duration-300 after:ease-in-out hover:after:origin-bottom-left hover:after:scale-x-100;
 }

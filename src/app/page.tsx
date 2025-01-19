@@ -11,7 +11,7 @@ const LANDING_CARDS = [
     description:
       "New to modding? Learn how to install MelonLoader or BepInEx and get your first mods running in minutes.",
     href: "/docs/getting-started/installation",
-    icon: <TbDownload />,
+    icon: <TbDownload className="text-miku-waterleaf" />,
     buttonText: "Installation Guide",
   },
   {
@@ -19,7 +19,7 @@ const LANDING_CARDS = [
     description:
       "Ready to create? Dive into our documentation covering both MelonLoader and BepInEx mod development.",
     href: "/docs/creating-mods/setup",
-    icon: <TbBook />,
+    icon: <TbBook className="text-miku-waterleaf" />,
     buttonText: "Read the Docs",
   },
   {
@@ -27,32 +27,32 @@ const LANDING_CARDS = [
     description:
       "Built something amazing? Learn how to share your creation with the Desktop Mate community.",
     href: "/docs/submitting-mods/guidelines",
-    icon: <TbCube />,
+    icon: <TbCube className="text-miku-waterleaf" />,
     buttonText: "Publishing Guide",
   },
 ];
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black">
+    <div className="min-h-screen bg-gradient-to-b from-miku-gray to-black">
       <div className="container mx-auto px-4 pt-32 pb-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="max-w-4xl mx-auto text-center"
         >
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-green-400 to-blue-500 text-transparent bg-clip-text">
+          <h1 className="text-4xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-miku-deep via-miku-teal to-miku-waterleaf text-transparent bg-clip-text">
             Desktop Mate Modding
           </h1>
-          <p className="text-xl text-gray-400 mb-12">
+          <p className="text-xl text-miku-light mb-12 leading-relaxed">
             Transform your Desktop Mate experience with mods. Whether you prefer
             MelonLoader or BepInEx, we&apos;ve got everything you need to get
             started, create, and share mods with the community.
           </p>
 
           <div className="flex flex-wrap justify-center gap-4 mb-16">
-            <GradientButton href="/mods">
-              <TbCube />
+            <GradientButton href="/mods" gradient="primary">
+              <TbCube className="text-xl" />
               Browse Mods
             </GradientButton>
           </div>
@@ -70,7 +70,7 @@ export default function HomePage() {
             ))}
           </div>
 
-          <p className="mt-16 text-sm text-gray-500">
+          <p className="mt-16 text-sm text-miku-light/60 hover:text-miku-light/80 transition-colors duration-200">
             Desktop Mate modding supports both MelonLoader and BepInEx mod
             loaders. Choose your preferred platform and start customizing today!
           </p>

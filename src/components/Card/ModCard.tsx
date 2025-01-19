@@ -1,22 +1,48 @@
 import type { Mod, ModMeta } from "@types";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { fetchModMeta } from "@lib/mods.lib";
 import { FaGithub } from "react-icons/fa";
 import { BiPackage } from "react-icons/bi";
 import { TbMelon, TbExternalLink } from "react-icons/tb";
 import { HiOutlineUser, HiOutlineTag } from "react-icons/hi";
-// import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 interface ModCardProps {
   mod: Mod;
   onMetaLoaded?: (meta: ModMeta) => boolean;
 }
 
+const getTypeColors = (type: string | undefined) => {
+  switch (type) {
+    case "MelonLoader":
+      return {
+        gradient: "from-miku-aquamarine to-miku-waterleaf",
+        bg: "bg-miku-deep/20",
+        icon: "text-miku-aquamarine",
+      };
+    case "BepInEx":
+      return {
+        gradient: "from-miku-deep to-miku-teal",
+        bg: "bg-miku-deep/20",
+        icon: "text-miku-teal",
+      };
+    case "Both":
+      return {
+        gradient: "from-miku-teal to-miku-waterleaf",
+        bg: "bg-miku-deep/20",
+        icon: "text-miku-waterleaf",
+      };
+    default:
+      return {
+        gradient: "from-miku-deep to-miku-teal",
+        bg: "bg-miku-deep/20",
+        icon: "text-miku-teal",
+      };
+  }
+};
 export const ModCard = ({ mod, onMetaLoaded }: ModCardProps) => {
   const [meta, setMeta] = useState<ModMeta | null>(null);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     const fetchMeta = async () => {
@@ -35,90 +61,89 @@ export const ModCard = ({ mod, onMetaLoaded }: ModCardProps) => {
 
   const handleGithubClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    e.stopPropagation();
     window.open(mod.repo, "_blank", "noopener,noreferrer");
   };
 
-  const handleCardClick = () => {
-    router.push(`/mods/${mod.name.toLowerCase()}`);
-  };
-
-  if (loading)
+  if (loading) {
     return (
-      <div className="p-6 rounded-xl bg-gray-800/50 backdrop-blur-sm animate-pulse border border-gray-700/50">
-        <div className="h-6 bg-gray-700/50 rounded-lg w-3/4 mb-4"></div>
-        <div className="h-4 bg-gray-700/50 rounded-lg w-1/2 mb-2"></div>
-        <div className="h-4 bg-gray-700/50 rounded-lg w-2/3"></div>
+      <div className="p-6 rounded-xl bg-miku-gray/50 backdrop-blur-sm animate-pulse border border-miku-deep/30">
+        <div className="h-8 bg-miku-deep/20 rounded-lg w-40 mb-4"></div>
+        <div className="h-12 bg-miku-deep/20 rounded-lg w-full mb-6"></div>
+        <div className="flex justify-between items-center">
+          <div className="flex gap-4">
+            <div className="h-5 bg-miku-deep/20 rounded-lg w-24"></div>
+            <div className="h-5 bg-miku-deep/20 rounded-lg w-20"></div>
+          </div>
+          <div className="flex gap-2">
+            <div className="w-9 h-9 rounded-lg bg-miku-deep/20"></div>
+            <div className="w-9 h-9 rounded-lg bg-miku-deep/20"></div>
+          </div>
+        </div>
       </div>
     );
+  }
 
   if (meta && onMetaLoaded && !onMetaLoaded(meta)) return null;
 
+  const colors = getTypeColors(meta?.type);
+
   return (
-    <div
-      onClick={handleCardClick}
-      className="group relative overflow-hidden rounded-xl bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 transition-all duration-300 hover:border-gray-600/50 hover:shadow-2xl hover:shadow-purple-500/10 cursor-pointer"
-    >
+    <div className="relative group rounded-xl bg-miku-gray/50 backdrop-blur-sm border border-miku-deep/30 hover:border-miku-teal/50 transition-all duration-300 overflow-hidden">
       <div
-        className={`absolute top-0 left-0 right-0 h-1 ${
-          meta?.type === "MelonLoader"
-            ? "bg-gradient-to-r from-green-500 to-emerald-500"
-            : "bg-gradient-to-r from-purple-500 to-pink-500"
-        }`}
+        className={`absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r ${colors.gradient}`}
       />
 
-      <div className="p-6">
-        <div className="flex justify-between items-start mb-4">
-          <div className="flex items-center gap-2">
-            <h3 className="text-xl font-semibold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-500 group-hover:to-pink-500 transition-all duration-300">
-              {mod.name}
-            </h3>
-            <TbExternalLink className="opacity-0 group-hover:opacity-50 transition-opacity" />
-          </div>
-          <div className="flex items-center gap-3">
-            <span
-              className={`flex items-center justify-center w-8 h-8 rounded-lg ${
-                meta?.type === "MelonLoader"
-                  ? "bg-green-500/10 text-green-400"
-                  : "bg-purple-500/10 text-purple-400"
-              }`}
-            >
-              {meta?.type === "MelonLoader" ? (
-                <TbMelon size={18} />
-              ) : (
-                <BiPackage size={18} />
-              )}
-            </span>
-            <button
-              onClick={handleGithubClick}
-              className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-700/50 text-gray-400 hover:bg-gray-700 hover:text-white transition-all duration-300 z-10"
-            >
-              <FaGithub size={18} />
-            </button>
-          </div>
-        </div>
+      <div className="p-6 flex flex-col min-h-[180px]">
+        <Link
+          href={`/mods/${mod.name.toLowerCase()}`}
+          className="group/title flex items-center gap-2 mb-3"
+        >
+          <h3 className="text-2xl text-miku-light font-medium group-hover/title:text-miku-teal transition-colors duration-300">
+            {mod.name}
+          </h3>
+          <TbExternalLink
+            className="text-miku-light/0 group-hover/title:text-miku-teal transition-all duration-300"
+            size={20}
+          />
+        </Link>
 
         {meta && (
           <>
-            <p className="text-gray-300/90 mb-6 line-clamp-2 text-sm">
-              {meta.description}
-            </p>
+            <p className="text-miku-light/70 mb-auto">{meta.description}</p>
 
-            <div className="flex items-center gap-4 text-sm text-gray-400">
-              <div className="flex items-center gap-1.5">
-                <HiOutlineUser className="opacity-75" />
-                <span>{meta.author}</span>
+            <div className="flex justify-between items-center pt-4 mt-2">
+              <div className="flex items-center gap-4 text-sm text-miku-light/50">
+                <div className="flex items-center gap-1.5">
+                  <HiOutlineUser size={16} />
+                  <span>{meta.author}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <HiOutlineTag size={16} />
+                  <span>v{meta.version}</span>
+                </div>
               </div>
-              <div className="flex items-center gap-1.5">
-                <HiOutlineTag className="opacity-75" />
-                <span>v{meta.version}</span>
+
+              <div className="flex gap-2">
+                <div
+                  className={`w-9 h-9 rounded-lg ${colors.bg} ${colors.icon} flex items-center justify-center`}
+                >
+                  {meta?.type === "MelonLoader" ? (
+                    <TbMelon size={20} />
+                  ) : (
+                    <BiPackage size={20} />
+                  )}
+                </div>
+                <button
+                  onClick={handleGithubClick}
+                  className="w-9 h-9 rounded-lg bg-miku-deep/20 text-miku-light hover:text-miku-teal flex items-center justify-center transition-colors duration-300"
+                >
+                  <FaGithub size={20} />
+                </button>
               </div>
             </div>
           </>
         )}
       </div>
-
-      <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 to-pink-500/0 opacity-0 group-hover:opacity-5 transition-opacity duration-300" />
     </div>
   );
 };
