@@ -3,7 +3,7 @@ import { fetchMods, fetchModMeta } from "@lib/mods.lib";
 import { ModPageClient } from "./ModPageClient";
 
 type Props = {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params: any; // @todo: same weird type error
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   searchParams: any; // @todo: cope
