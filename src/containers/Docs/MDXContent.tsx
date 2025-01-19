@@ -8,7 +8,8 @@ interface MDXContentProps {
 
 export function MDXContent({ source }: MDXContentProps) {
   return (
-    <div className="prose prose-invert prose-sm sm:prose lg:prose-lg max-w-none 
+    <div
+      className="prose prose-invert prose-sm sm:prose lg:prose-lg max-w-none 
       prose-pre:overflow-x-auto
       prose-img:rounded-xl
       prose-img:w-full

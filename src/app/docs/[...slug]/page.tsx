@@ -55,31 +55,31 @@ export default async function DocPage({ params }: Props) {
     }
 
     if (resolvedParams.slug.length === 2) {
-        const [section, docSlug] = resolvedParams.slug;
-        const { mdxSource, frontMatter } = await getDocBySlug(section, docSlug);
-  
-        return (
-          <DocsLayout>
-            <div className="w-full max-w-4xl mx-auto">
-              <h1 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-miku-deep via-miku-teal to-miku-waterleaf text-transparent bg-clip-text">
-                {frontMatter.title}
-              </h1>
-              {frontMatter.description && (
-                <p className="text-base sm:text-lg text-miku-light/90 mb-6 sm:mb-8">
-                  {frontMatter.description}
-                </p>
-              )}
-              <div className="prose prose-invert prose-sm sm:prose lg:prose-lg max-w-none">
-                <MDXContent source={mdxSource} />
-              </div>
+      const [section, docSlug] = resolvedParams.slug;
+      const { mdxSource, frontMatter } = await getDocBySlug(section, docSlug);
+
+      return (
+        <DocsLayout>
+          <div className="w-full max-w-4xl mx-auto">
+            <h1 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-miku-deep via-miku-teal to-miku-waterleaf text-transparent bg-clip-text">
+              {frontMatter.title}
+            </h1>
+            {frontMatter.description && (
+              <p className="text-base sm:text-lg text-miku-light/90 mb-6 sm:mb-8">
+                {frontMatter.description}
+              </p>
+            )}
+            <div className="prose prose-invert prose-sm sm:prose lg:prose-lg max-w-none">
+              <MDXContent source={mdxSource} />
             </div>
-          </DocsLayout>
-        );
-      }
-  
-      return notFound();
-    } catch (error) {
-      console.error("Doc loading error:", error);
-      return notFound();
+          </div>
+        </DocsLayout>
+      );
     }
+
+    return notFound();
+  } catch (error) {
+    console.error("Doc loading error:", error);
+    return notFound();
   }
+}

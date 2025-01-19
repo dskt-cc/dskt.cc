@@ -34,48 +34,48 @@ const convertImageUrls = (markdown: string, repo: string): string => {
 };
 
 const CustomImage = ({
-    src,
-    alt,
-    repo,
-  }: {
-    src: string;
-    alt: string;
-    repo: string;
-  }) => {
-    const [error, setError] = useState(false);
-  
-    if (error) return null;
-  
-    if (src.includes("img.shields.io")) {
-      return (
-        <Image
-          src={src}
-          alt={alt}
-          width={124}
-          height={28}
-          className="inline-block"
-        />
-      );
-    }
-  
-    const fullImageUrl = src.startsWith("http")
-      ? src
-      : `${repo.replace("github.com", "raw.githubusercontent.com")}/main/${src}`;
-  
+  src,
+  alt,
+  repo,
+}: {
+  src: string;
+  alt: string;
+  repo: string;
+}) => {
+  const [error, setError] = useState(false);
+
+  if (error) return null;
+
+  if (src.includes("img.shields.io")) {
     return (
-      <div className="relative w-full h-[400px] my-8"> 
-        <Image
-          src={fullImageUrl}
-          alt={alt}
-          fill
-          className="object-contain" 
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          priority
-          onError={() => setError(true)}
-        />
-      </div>
+      <Image
+        src={src}
+        alt={alt}
+        width={124}
+        height={28}
+        className="inline-block"
+      />
     );
-  };
+  }
+
+  const fullImageUrl = src.startsWith("http")
+    ? src
+    : `${repo.replace("github.com", "raw.githubusercontent.com")}/main/${src}`;
+
+  return (
+    <div className="relative w-full h-[400px] my-8">
+      <Image
+        src={fullImageUrl}
+        alt={alt}
+        fill
+        className="object-contain"
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        priority
+        onError={() => setError(true)}
+      />
+    </div>
+  );
+};
 
 export function ModPageClient({ slug }: ModPageClientProps) {
   const [modData, setModData] = useState<{
