@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { notFound } from "next/navigation";
-
 import Link from "next/link";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
@@ -14,11 +13,15 @@ import {
   HiOutlineTag,
   HiOutlineCube,
   HiOutlineCollection,
+  HiOutlineEye,
 } from "react-icons/hi";
 
-import { fetchMods, fetchModMeta } from "@lib/mods.lib";
+import { fetchModByName } from "@lib/mods.lib";
+
+import type { Mod } from "@/types";
+
+import { DownloadButton } from "@components/Button/DownloadButton";
 import { ModSlugCard } from "@components/Card/ModSlugCard";
-import type { Mod, ModMeta } from "@types";
 
 import { CustomParagraph } from "@components/Markdown/CustomParagraph";
 import { CustomImage } from "@components/Markdown/CustomImage";
@@ -28,29 +31,6 @@ interface ModPageClientProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   slug: any;
 }
-
-const tryFetchWithBranch = async (url: string, branch: string) => {
-  const branchUrl = url.replace("/main/", `/${branch}/`);
-  const response = await fetch(branchUrl);
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-  return response;
-};
-
-const convertImageUrls = (
-  markdown: string,
-  repo: string,
-  branch: string,
-): string => {
-  return markdown.replace(/!\[(.*?)\]\(((?!http).*?)\)/g, (_, alt, path) => {
-    const rawUrl = `${repo.replace(
-      "github.com",
-      "raw.githubusercontent.com",
-    )}/${branch}/${path}`;
-    return `![${alt}](${rawUrl})`;
-  });
-};
 
 const LoadingSkeleton = () => (
   <div className="min-h-screen bg-gradient-to-b from-miku-gray to-black pt-24">
@@ -70,66 +50,43 @@ const LoadingSkeleton = () => (
   </div>
 );
 
+async function fetchReadme(repo: string): Promise<string> {
+  const baseUrl = repo.replace("github.com", "raw.githubusercontent.com");
+
+  // Try main branch first, then master
+  for (const branch of ["main", "master"]) {
+    try {
+      const response = await fetch(`${baseUrl}/${branch}/README.md`);
+      if (response.ok) {
+        const text = await response.text();
+        return text.replace(
+          /!\[(.*?)\]\(((?!http).*?)\)/g,
+          (_, alt, path) => `![${alt}](${baseUrl}/${branch}/${path})`,
+        );
+      }
+    } catch (error) {
+      console.error(`Error fetching README from ${branch} branch:`, error);
+    }
+  }
+
+  return "No README available";
+}
+
 export function ModPageClient({ slug }: ModPageClientProps) {
-  const [modData, setModData] = useState<{
-    mod: Mod | null;
-    meta: ModMeta | null;
-    readme: string | null;
-  }>({
-    mod: null,
-    meta: null,
-    readme: null,
-  });
+  const [mod, setMod] = useState<Mod | null>(null);
+  const [readme, setReadme] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!slug) return;
-
     const loadModData = async () => {
       try {
-        const mods = await fetchMods();
-        const mod = mods.find(
-          (m) => m.name.toLowerCase() === slug.toLowerCase(),
-        );
+        const modData = await fetchModByName(slug);
+        setMod(modData);
 
-        if (!mod) {
-          setLoading(false);
-          return;
-        }
-
-        const baseReadmeUrl = mod.repo
-          .replace("github.com", "raw.githubusercontent.com")
-          .replace(/\/$/, "");
-
-        let readme: string;
-        let branch: string;
-
-        try {
-          const mainResponse = await tryFetchWithBranch(
-            `${baseReadmeUrl}/main/README.md`,
-            "main",
-          );
-          readme = await mainResponse.text();
-          branch = "main";
-        } catch {
-          const masterResponse = await tryFetchWithBranch(
-            `${baseReadmeUrl}/master/README.md`,
-            "master",
-          );
-          readme = await masterResponse.text();
-          branch = "master";
-        }
-
-        const [meta] = await Promise.all([fetchModMeta(mod.repo)]);
-        const processedReadme = convertImageUrls(readme, mod.repo, branch);
-
-        setModData({
-          mod,
-          meta,
-          readme: processedReadme,
-        });
-      } catch {
-        // Silently handle any errors
+        const readmeContent = await fetchReadme(modData.repo);
+        setReadme(readmeContent);
+      } catch (error) {
+        console.error("Error loading mod data:", error);
       } finally {
         setLoading(false);
       }
@@ -139,9 +96,7 @@ export function ModPageClient({ slug }: ModPageClientProps) {
   }, [slug]);
 
   if (loading) return <LoadingSkeleton />;
-  if (!modData.mod || !modData.meta) return notFound();
-
-  const { mod, meta, readme } = modData;
+  if (!mod) return notFound();
 
   return (
     <div className="pt-24">
@@ -157,20 +112,22 @@ export function ModPageClient({ slug }: ModPageClientProps) {
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-miku-deep via-miku-teal to-miku-waterleaf truncate">
                   {mod.name}
                 </h1>
-                <p className="text-base sm:text-lg text-miku-light break-words">
-                  {meta.description}
+                <p className="text-base sm:text-lg text-miku-light break-words mb-3">
+                  {mod.meta.description}
                 </p>
+                <div className="flex gap-4 items-center text-sm text-miku-light/50">
+                  <div className="flex items-center gap-1.5">
+                    <TbDownload className="flex-shrink-0" size={16} />
+                    <span>{mod.downloads.toLocaleString()} downloads</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <HiOutlineEye className="flex-shrink-0" size={16} />
+                    <span>{mod.views.toLocaleString()} views</span>
+                  </div>
+                </div>
               </div>
               <div className="flex gap-3 md:self-center">
-                <Link
-                  href={`${mod.repo}/releases/latest`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-miku-teal to-miku-waterleaf hover:from-miku-waterleaf hover:to-miku-teal text-white rounded-lg transition-all duration-200 hover:scale-105 shadow-lg shadow-miku-teal/20"
-                >
-                  <TbDownload size={20} />
-                  <span>Download</span>
-                </Link>
+                <DownloadButton mod={mod} />
                 <Link
                   href={mod.repo}
                   target="_blank"
@@ -186,23 +143,23 @@ export function ModPageClient({ slug }: ModPageClientProps) {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-1">
               <ModSlugCard
                 title="Author"
-                value={meta.author}
+                value={mod.meta.author}
                 icon={<HiOutlineUser className="text-miku-waterleaf" />}
                 isAuthor
               />
               <ModSlugCard
                 title="Version"
-                value={meta.version}
+                value={mod.meta.version}
                 icon={<HiOutlineTag className="text-miku-teal" />}
               />
               <ModSlugCard
                 title="Type"
-                value={meta.type}
+                value={mod.meta.type}
                 icon={<HiOutlineCube className="text-miku-pink" />}
               />
               <ModSlugCard
                 title="Categories"
-                value={meta.category}
+                value={mod.meta.category}
                 icon={<HiOutlineCollection className="text-miku-aquamarine" />}
               />
             </div>
@@ -216,11 +173,7 @@ export function ModPageClient({ slug }: ModPageClientProps) {
                 img: ({ src, alt }) => {
                   if (!src) return null;
                   return (
-                    <CustomImage
-                      src={src}
-                      alt={alt || ""}
-                      repo={modData.mod?.repo || ""}
-                    />
+                    <CustomImage src={src} alt={alt || ""} repo={mod.repo} />
                   );
                 },
                 a: ({ href, children }) => {

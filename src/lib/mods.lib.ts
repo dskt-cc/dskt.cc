@@ -1,43 +1,108 @@
-import type { Mod, ModMeta } from "@types";
+import type { Mod } from "@/types";
 
-const GITHUB_RAW_URL = "https://raw.githubusercontent.com/dskt-cc/mods/main";
+const API_URL = "https://api.dskt.cc";
+
+export interface ApiResponse<T> {
+  status: number;
+  data: T;
+}
 
 const fetchJSON = async <T>(endpoint: string): Promise<T> => {
   const response = await fetch(endpoint);
   if (!response.ok) {
     return Promise.reject();
   }
-  const text = await response.text();
-  return JSON.parse(text);
+  const responseData: ApiResponse<T> = await response.json();
+  return responseData.data;
 };
 
-const convertToRawUrl = (
-  githubUrl: string,
-  filename: string,
-  branch: string,
-): string => {
-  const matches = githubUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/);
-  if (!matches) {
-    throw new Error("Invalid GitHub URL");
-  }
-  const [, username, repo] = matches;
+export interface ModStats {
+  _id: string;
+  name: string;
+  downloads: number;
+  views: number;
+}
 
-  return `https://raw.githubusercontent.com/${username}/${repo}/${branch}/${filename}`;
+interface ModsQuery {
+  search?: string;
+  sort?: string;
+  type?: string;
+  category?: string;
+}
+
+const fetchMods = async (query: ModsQuery = {}): Promise<Mod[]> => {
+  const params = new URLSearchParams();
+  if (query.search) params.append("search", query.search);
+  if (query.sort) params.append("sort", query.sort);
+  if (query.type) params.append("type", query.type);
+  if (query.category) params.append("category", query.category);
+
+  return fetchJSON<Mod[]>(`${API_URL}/mods?${params.toString()}`);
 };
 
-const fetchMods = async (): Promise<Mod[]> => {
-  return fetchJSON<Mod[]>(`${GITHUB_RAW_URL}/mods.json`);
+const fetchFeaturedMods = async (): Promise<Mod[]> => {
+  return fetchJSON<Mod[]>(`${API_URL}/mods/featured`);
 };
 
-// @TODO: this should probably have error handling, but in a way that dosent log 404 when main is called master
-const fetchModMeta = async (repo: string): Promise<ModMeta> => {
+const fetchModByName = async (name: string): Promise<Mod> => {
+  return fetchJSON<Mod>(`${API_URL}/mod/${name}`);
+};
+
+const fetchModStats = async (): Promise<ModStats[]> => {
+  return fetchJSON<ModStats[]>(`${API_URL}/mods/stats`);
+};
+
+const incrementModViews = async (
+  name: string,
+): Promise<{ success: boolean; remainingTime?: number }> => {
   try {
-    return await fetchJSON<ModMeta>(convertToRawUrl(repo, "dskt.json", "main"));
-  } catch {
-    return await fetchJSON<ModMeta>(
-      convertToRawUrl(repo, "dskt.json", "master"),
-    );
+    const response = await fetch(`${API_URL}/mod/${name}/view`, {
+      method: "PUT",
+    });
+    const data = await response.json();
+
+    if (data.status === 429) {
+      return {
+        success: false,
+        remainingTime: Math.ceil(data.remainingTime / (1000 * 60 * 60)), // Convert to hours
+      };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error incrementing views:", error);
+    return { success: false };
   }
 };
 
-export { fetchMods, fetchModMeta };
+const incrementModDownloads = async (
+  name: string,
+): Promise<{ success: boolean; remainingTime?: number }> => {
+  try {
+    const response = await fetch(`${API_URL}/mod/${name}/download`, {
+      method: "PUT",
+    });
+    const data = await response.json();
+
+    if (data.status === 429) {
+      return {
+        success: false,
+        remainingTime: Math.ceil(data.remainingTime / (1000 * 60 * 60)), // Convert to hours
+      };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error incrementing downloads:", error);
+    return { success: false };
+  }
+};
+
+export {
+  fetchMods,
+  fetchFeaturedMods,
+  fetchModByName,
+  fetchModStats,
+  incrementModViews,
+  incrementModDownloads,
+};

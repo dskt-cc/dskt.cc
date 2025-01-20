@@ -52,3 +52,13 @@ html {
 .link-underline {
   @apply relative after:absolute after:bottom-0 after:left-0 after:h-[1px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-miku-teal after:transition-transform after:duration-300 after:ease-in-out hover:after:origin-bottom-left hover:after:scale-x-100;
 }
+
+.prose img {
+  margin-top: 2rem !important;
+  margin-bottom: 2rem !important;
+  clear: both !important;
+}
+
+.prose p {
+  clear: both !important;
+}

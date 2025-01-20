@@ -1,15 +1,16 @@
-import type { Mod, ModMeta } from "@types";
-import { useState, useEffect } from "react";
+"use client";
+
 import Link from "next/link";
-import { fetchModMeta } from "@lib/mods.lib";
+
 import { FaGithub } from "react-icons/fa";
 import { BiPackage } from "react-icons/bi";
-import { TbMelon, TbExternalLink } from "react-icons/tb";
+import { TbMelon, TbExternalLink, TbDownload } from "react-icons/tb";
 import { HiOutlineUser, HiOutlineTag } from "react-icons/hi";
+
+import { Mod } from "@/types";
 
 interface ModCardProps {
   mod: Mod;
-  onMetaLoaded?: (meta: ModMeta) => boolean;
 }
 
 const getTypeColors = (type: string | undefined) => {
@@ -40,61 +41,26 @@ const getTypeColors = (type: string | undefined) => {
       };
   }
 };
-
-export const ModCard = ({ mod, onMetaLoaded }: ModCardProps) => {
-  const [meta, setMeta] = useState<ModMeta | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchMeta = async () => {
-      try {
-        const modMeta = await fetchModMeta(mod.repo);
-        setMeta(modMeta);
-      } catch (error) {
-        console.error("Error fetching mod metadata:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMeta();
-  }, [mod.repo]);
-
+export const ModCard = ({ mod }: ModCardProps) => {
   const handleGithubClick = (e: React.MouseEvent) => {
     e.preventDefault();
     window.open(mod.repo, "_blank", "noopener,noreferrer");
   };
 
-  if (loading) {
-    return (
-      <div className="h-[240px] p-6 rounded-xl bg-miku-gray/50 backdrop-blur-sm animate-pulse border border-miku-deep/30">
-        <div className="h-8 bg-miku-deep/20 rounded-lg w-40 mb-4"></div>
-        <div className="h-12 bg-miku-deep/20 rounded-lg w-full mb-6"></div>
-        <div className="absolute bottom-6 left-6 right-6">
-          <div className="flex justify-between items-center">
-            <div className="flex gap-4">
-              <div className="h-5 bg-miku-deep/20 rounded-lg w-24"></div>
-              <div className="h-5 bg-miku-deep/20 rounded-lg w-20"></div>
-            </div>
-            <div className="flex gap-2">
-              <div className="w-9 h-9 rounded-lg bg-miku-deep/20"></div>
-              <div className="w-9 h-9 rounded-lg bg-miku-deep/20"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (meta && onMetaLoaded && !onMetaLoaded(meta)) return null;
-
-  const colors = getTypeColors(meta?.type);
+  const colors = getTypeColors(mod.meta?.type);
 
   return (
     <div className="relative group h-[240px] rounded-xl bg-miku-gray/50 backdrop-blur-sm border border-miku-deep/30 hover:border-miku-teal/50 transition-all duration-300 overflow-hidden">
       <div
         className={`absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r ${colors.gradient}`}
       />
+
+      <div className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-miku-deep/30 backdrop-blur-sm border border-miku-deep/20">
+        <TbDownload className="text-miku-waterleaf" size={16} />
+        <span className="text-sm font-medium text-miku-light">
+          {mod.downloads.toLocaleString()}
+        </span>
+      </div>
 
       <div className="p-6 flex flex-col h-full">
         <Link
@@ -110,48 +76,44 @@ export const ModCard = ({ mod, onMetaLoaded }: ModCardProps) => {
           />
         </Link>
 
-        {meta && (
-          <>
-            <p className="text-miku-light/70 line-clamp-3">
-              {meta.description}
-            </p>
+        <p className="text-miku-light/70 line-clamp-3">
+          {mod.meta?.description}
+        </p>
 
-            <div className="absolute bottom-6 left-6 right-6">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-4 text-sm text-miku-light/50">
-                  <div className="flex items-center gap-1.5">
-                    <HiOutlineUser className="flex-shrink-0" size={16} />
-                    <span className="truncate max-w-[100px]">
-                      {meta.author}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <HiOutlineTag className="flex-shrink-0" size={16} />
-                    <span className="truncate">v{meta.version}</span>
-                  </div>
-                </div>
-
-                <div className="flex gap-2 flex-shrink-0">
-                  <div
-                    className={`w-9 h-9 rounded-lg ${colors.bg} ${colors.icon} flex items-center justify-center`}
-                  >
-                    {meta?.type === "MelonLoader" ? (
-                      <TbMelon size={20} />
-                    ) : (
-                      <BiPackage size={20} />
-                    )}
-                  </div>
-                  <button
-                    onClick={handleGithubClick}
-                    className="w-9 h-9 rounded-lg bg-miku-deep/20 text-miku-light hover:text-miku-teal flex items-center justify-center transition-colors duration-300"
-                  >
-                    <FaGithub size={20} />
-                  </button>
-                </div>
+        <div className="absolute bottom-6 left-6 right-6">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-4 text-sm text-miku-light/50">
+              <div className="flex items-center gap-1.5">
+                <HiOutlineUser className="flex-shrink-0" size={16} />
+                <span className="truncate max-w-[100px]">
+                  {mod.meta?.author}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <HiOutlineTag className="flex-shrink-0" size={16} />
+                <span className="truncate">v{mod.meta?.version}</span>
               </div>
             </div>
-          </>
-        )}
+
+            <div className="flex gap-2 flex-shrink-0">
+              <div
+                className={`w-9 h-9 rounded-lg ${colors.bg} ${colors.icon} flex items-center justify-center`}
+              >
+                {mod.meta?.type === "MelonLoader" ? (
+                  <TbMelon size={20} />
+                ) : (
+                  <BiPackage size={20} />
+                )}
+              </div>
+              <button
+                onClick={handleGithubClick}
+                className="w-9 h-9 rounded-lg bg-miku-deep/20 text-miku-light hover:text-miku-teal flex items-center justify-center transition-colors duration-300"
+              >
+                <FaGithub size={20} />
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Suspense } from "react";
-import { fetchMods, fetchModMeta } from "@lib/mods.lib";
+import { fetchModByName, incrementModViews } from "@lib/mods.lib";
 import { ModPageClient } from "./ModPageClient";
 import type { Metadata } from "next";
 
 interface Props {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params: any;
-  searchParams: any;
 }
 
 const LoadingSkeleton = () => (
@@ -30,6 +29,14 @@ const LoadingSkeleton = () => (
 export default async function ModPage({ params }: Props) {
   const { slug } = params;
 
+  try {
+    // Track the view before rendering the page
+    await incrementModViews(slug);
+  } catch (error) {
+    // Silently handle view tracking errors
+    console.error("Failed to track view:", error);
+  }
+
   return (
     <Suspense fallback={<LoadingSkeleton />}>
       <ModPageClient slug={slug} />
@@ -41,8 +48,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = params;
 
   try {
-    const mods = await fetchMods();
-    const mod = mods.find((m) => m.name.toLowerCase() === slug.toLowerCase());
+    const mod = await fetchModByName(slug);
 
     if (!mod) {
       return {
@@ -55,24 +61,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       };
     }
 
-    const meta = await fetchModMeta(mod.repo);
-
     return {
       title: `${mod.name} | dskt.cc`,
-      description: meta.description,
+      description: mod.meta.description,
       openGraph: {
         title: `${mod.name} | dskt.cc`,
-        description: meta.description,
+        description: mod.meta.description,
         type: "article",
         url: `/mods/${slug}`,
       },
       twitter: {
         card: "summary",
         title: `${mod.name} | dskt.cc`,
-        description: meta.description,
+        description: mod.meta.description,
       },
-      authors: [{ name: meta.author }],
-      keywords: ["desktop mate", "mod", mod.name, meta.type],
+      authors: [{ name: mod.meta.author }],
+      keywords: [
+        "desktop mate",
+        "mod",
+        mod.name,
+        mod.meta.type,
+        ...mod.meta.category,
+      ],
       robots: {
         index: true,
         follow: true,
