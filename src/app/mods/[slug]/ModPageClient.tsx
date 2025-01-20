@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { notFound } from "next/navigation";
-import Image from "next/image";
+
 import Link from "next/link";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
@@ -20,99 +20,14 @@ import { fetchMods, fetchModMeta } from "@lib/mods.lib";
 import { ModSlugCard } from "@components/Card/ModSlugCard";
 import type { Mod, ModMeta } from "@types";
 
-type ImageDomainConfig = {
-  domain: string;
-  handler: (src: string) => {
-    src: string;
-    props:
-      | (Partial<React.ComponentProps<typeof Image>> & {
-          width: number;
-          height: number;
-        })
-      | {
-          fill: true;
-        };
-  };
-};
-
-const IMAGE_CONFIGS: ImageDomainConfig[] = [
-  {
-    domain: "img.shields.io",
-    handler: (src) => ({
-      src,
-      props: {
-        width: 124,
-        height: 28,
-        className: "inline-block",
-      },
-    }),
-  },
-  {
-    domain: "i.imgur.com",
-    handler: (src) => ({
-      src,
-      props: {
-        fill: true,
-        className: "object-contain",
-      },
-    }),
-  },
-  {
-    domain: "private-user-images.githubusercontent.com",
-    handler: (src) => ({
-      src,
-      props: {
-        fill: true,
-        unoptimized: true,
-        className: "object-contain",
-      },
-    }),
-  },
-  {
-    domain: "avatars.githubusercontent.com",
-    handler: (src) => ({
-      src,
-      props: {
-        fill: true,
-        className: "object-contain",
-      },
-    }),
-  },
-  {
-    domain: "raw.githubusercontent.com",
-    handler: (src) => ({
-      src,
-      props: {
-        fill: true,
-        className: "object-contain",
-      },
-    }),
-  },
-] as const;
-
-const getImageConfig = (src: string) => {
-  return IMAGE_CONFIGS.find((config) => src.includes(config.domain));
-};
-
-const YOUTUBE_PATTERNS = [
-  /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&]+)/i,
-  /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([^?]+)/i,
-  /(?:https?:\/\/)?(?:www\.)?youtu\.be\/([^?]+)/i,
-  /(?:https?:\/\/)?(?:www\.)?youtube\.com\/shorts\/([^?]+)/i,
-] as const;
+import { CustomParagraph } from "@components/Markdown/CustomParagraph";
+import { CustomImage } from "@components/Markdown/CustomImage";
+import { YouTubeEmbed } from "@components/Markdown/YoutubeEmbed";
 
 interface ModPageClientProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   slug: any;
 }
-
-const getYouTubeVideoId = (url: string): string | null => {
-  for (const pattern of YOUTUBE_PATTERNS) {
-    const match = url.match(pattern);
-    if (match) return match[1];
-  }
-  return null;
-};
 
 const tryFetchWithBranch = async (url: string, branch: string) => {
   const branchUrl = url.replace("/main/", `/${branch}/`);
@@ -136,142 +51,6 @@ const convertImageUrls = (
     return `![${alt}](${rawUrl})`;
   });
 };
-
-const YouTubeEmbed = ({ url }: { url: string }) => {
-  const videoId = getYouTubeVideoId(url);
-  if (!videoId) return <a href={url}>{url}</a>;
-
-  return (
-    <iframe
-      src={`https://www.youtube.com/embed/${videoId}`}
-      title="YouTube video player"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowFullScreen
-      className="w-full aspect-video rounded-lg my-4"
-    />
-  );
-};
-
-const CustomParagraph = ({
-  children,
-  node,
-}: {
-  children: React.ReactNode;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  node: any;
-}) => {
-  // Check if paragraph only contains an image
-  const hasOnlyImage =
-    node.children.length === 1 &&
-    node.children[0].type === "element" &&
-    node.children[0].tagName === "img";
-
-  // Check if paragraph only contains a YouTube embed
-  const hasOnlyYouTube =
-    node.children.length === 1 &&
-    node.children[0].type === "element" &&
-    node.children[0].tagName === "a" &&
-    (node.children[0].properties?.href?.includes("youtube.com") ||
-      node.children[0].properties?.href?.includes("youtu.be"));
-
-  // If it only contains an image or YouTube embed, don't wrap in <p>
-  if (hasOnlyImage || hasOnlyYouTube) {
-    return <>{children}</>;
-  }
-
-  return <p>{children}</p>;
-};
-const CustomImage = ({
-  src,
-  alt,
-  repo,
-}: {
-  src: string;
-  alt: string;
-  repo: string;
-}) => {
-  const [error, setError] = useState(false);
-  const [imageData, setImageData] = useState<{
-    src: string;
-    props: Partial<React.ComponentProps<typeof Image>>;
-  }>({
-    src,
-    props: {
-      fill: true,
-      className: "object-contain",
-    },
-  });
-
-  useEffect(() => {
-    const loadImage = async () => {
-      try {
-        if (src.startsWith("http")) {
-          const config = getImageConfig(src);
-          if (config) {
-            setImageData({ src, ...config.handler(src) });
-            return;
-          }
-          setError(true);
-          return;
-        }
-
-        const branches = ["main", "master"];
-        for (const branch of branches) {
-          const rawUrl = `${repo.replace(
-            "github.com",
-            "raw.githubusercontent.com",
-          )}/${branch}/${src}`;
-
-          const response = await fetch(rawUrl);
-          if (response.ok) {
-            setImageData({
-              src: rawUrl,
-              props: {
-                fill: true,
-                priority: true,
-                className: "object-contain",
-              },
-            });
-            return;
-          }
-        }
-
-        setError(true);
-      } catch {
-        setError(true);
-      }
-    };
-
-    loadImage();
-  }, [src, repo]);
-
-  if (error) return null;
-
-  const { src: finalSrc, props } = imageData;
-
-  // For images that use fill property
-  if (props.fill) {
-    return (
-      <div className="relative w-full h-[400px] my-4 mb-4">
-        <Image
-          src={finalSrc}
-          alt={alt}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          priority
-          onError={() => setError(true)}
-          {...props}
-        />
-      </div>
-    );
-  }
-
-  // For images with explicit dimensions (like badges)
-  return (
-    <Image className="mb-4" src={finalSrc} alt={alt} onError={() => setError(true)} {...props} />
-  );
-};
-
-export const WHITELISTED_DOMAINS = IMAGE_CONFIGS.map((config) => config.domain);
 
 const LoadingSkeleton = () => (
   <div className="min-h-screen bg-gradient-to-b from-miku-gray to-black pt-24">
@@ -374,11 +153,13 @@ export function ModPageClient({ slug }: ModPageClientProps) {
             className="mb-6"
           >
             <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-6">
-              <div className="flex-1">
-                <h1 className="text-4xl md:text-5xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-miku-deep via-miku-teal to-miku-waterleaf">
+              <div className="flex-1 min-w-0">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-miku-deep via-miku-teal to-miku-waterleaf truncate">
                   {mod.name}
                 </h1>
-                <p className="text-lg text-miku-light">{meta.description}</p>
+                <p className="text-base sm:text-lg text-miku-light break-words">
+                  {meta.description}
+                </p>
               </div>
               <div className="flex gap-3 md:self-center">
                 <Link
