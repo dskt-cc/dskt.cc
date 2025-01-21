@@ -2,7 +2,7 @@ export type ModType = "MelonLoader" | "BepInEx" | "Both";
 
 export enum ModCategory {
   Performance = "Performance",
-  QualityOfLife = "QualityOfLife",
+  QualityOfLife = "Quality of Life",
   Content = "Content",
   Overhaul = "Overhaul",
   Other = "Other",
