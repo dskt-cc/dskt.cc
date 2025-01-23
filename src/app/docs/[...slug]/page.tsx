@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Metadata } from "next";
 import { getDocBySlug, getSectionDocs } from "@/lib/mdx.lib";
 import { ClientDocsPage } from "@containers/Docs/ClientDocsPage";
@@ -5,10 +6,8 @@ import { notFound, redirect } from "next/navigation";
 import DOCS_STRUCTURE from "@constants/docs";
 
 type Props = {
-  params: {
-    slug: string[];
-  };
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: any;
+  searchParams: any;
 };
 
 async function getAllSections(): Promise<string[]> {
