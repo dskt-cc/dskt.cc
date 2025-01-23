@@ -1,35 +1,99 @@
 ---
-title: Publishing
-description: Learn the dskt.cc publishing standards
+title: Publishing Standards
+description: To list your mod on dskt.cc, include a `dskt.json` file in the root of your repository.
 ---
 
-# Metadata Standards
-
-To list your mod on dskt.cc, include a `dskt.json` file in the root of your repository.
-
-## File Structure
+## Schema Structure
 
 ```json
 {
-  "author": "dvhsh",
-  "discord": "3234324324",
-  "version": "1.0.4",
-  "type": "MelonLoader",
-  "category": ["Overhaul"],
-  "description": "A MelonLoader mod that lets you chat with your Desktop Mate using AI! ♪"
+  "name": "YourModName",
+  "meta": {
+    "description": "A brief description of your mod",
+    "author": "YourGitHubUsername",
+    "category": ["Performance"],
+    "type": "MelonLoader",
+    "version": "1.0.0"
+  },
+  "locale": {
+    "default": "en-US",
+    "supported": ["en-US", "ja-JP"]
+  },
+  "sponsor": {
+    "name": "Sponsor Name",
+    "url": "https://sponsor.url"
+  }
 }
 ```
 
-## Fields
+## Required Fields
 
+### Core Properties
+
+- **name**: Your mod's name (no spaces)
+- **meta**: Object containing mod metadata
+
+### Meta Properties
+
+- **description**: Brief description of your mod
 - **author**: Your GitHub username
-- **discord**: Your Discord user ID
-- **version**: Current version of your mod
-- **type**: `"MelonLoader"` | `"BepInEx"` | `"Both"`
 - **category**: Array of categories from:
   - `"Performance"`: Performance improvements
-  - `"Quality of Life"`: Convenience features
+  - `"QualityOfLife"`: Convenience features
   - `"Content"`: New features or content
-  - `"Overhaul"`: Major gameplay changes
+  - `"Overhaul"`: Major changes
   - `"Other"`: Misc modifications
-- **description**: Brief description of your mod
+- **type**: One of:
+  - `"MelonLoader"`: MelonLoader mod
+  - `"BepInEx"`: BepInEx plugin
+  - `"Both"`: Supports both loaders
+- **version**: Current version (semver format)
+
+## Optional Fields
+
+### Localization
+
+```json
+"locale": {
+  "default": "en-US",
+  "supported": ["en-US", "ja-JP"]
+}
+```
+
+- **default**: Default language code
+- **supported**: Array of supported language codes
+
+### Sponsorship
+
+```json
+"sponsor": {
+  "name": "Sponsor Name",
+  "url": "https://sponsor.url"
+}
+```
+
+- **name**: Sponsor's name
+- **url**: Sponsor's website
+
+## Example Usage
+
+```json
+{
+  "name": "MateChat",
+  "meta": {
+    "description": "A MelonLoader mod that lets you chat with your Desktop Mate using AI! ♪",
+    "author": "dvhsh",
+    "category": ["Content", "Overhaul"],
+    "type": "MelonLoader",
+    "version": "1.5.1"
+  },
+  "locale": {
+    "default": "en-US",
+    "supported": ["en-US", "ja-JP"]
+  },
+  "sponsor": {
+    "name": "Example Sponsor",
+    "url": "https://example.com"
+  }
+}
+```

@@ -1,0 +1,60 @@
+---
+title: Submission Process
+description: How to submit your mod to dskt.cc
+---
+
+# Submitting Your Mod
+
+## Step-by-Step Guide
+
+1. **Prepare Your Repository**
+
+   - Ensure your mod is in a public GitHub repository
+   - Add a valid `dskt.json` file
+   - Include proper documentation
+   - Tag your latest release
+
+2. **Fork the Mods Repository**
+
+   - Go to [github.com/dskt-cc/mods](https://github.com/dskt-cc/mods)
+   - Click the "Fork" button
+   - Clone your fork locally
+
+3. **Add Your Mod**
+
+   - Open `mods.json`
+   - Add your mod entry to the bottom:
+     ```json
+     {
+       "name": "YourModName",
+       "repo": "https://github.com/username/repository"
+     }
+     ```
+
+4. **Submit Pull Request**
+   - Commit your changes
+   - Push to your fork
+   - Create a Pull Request
+   - Fill out the PR template
+
+## Validation
+
+Your submission will be automatically validated for:
+
+- Valid `mods.json` format
+- Presence of `dskt.json` in your repository
+- Valid `dskt.json` schema
+- Correct mod information
+
+## After Submission
+
+1. Monitor your Pull Request for:
+
+   - Automated validation results
+   - Review comments
+   - Requested changes
+
+2. Once approved:
+   - Your mod will appear on dskt.cc
+   - Users can download and install it
+   - You can update it through new releases

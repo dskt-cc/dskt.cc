@@ -1,0 +1,71 @@
+---
+title: Miscellaneous Troubleshooting
+description: Common issues and their solutions for Desktop Mate mods
+---
+
+## Hiding MelonLoader Console
+
+To launch Desktop Mate without the MelonLoader console:
+
+1. Right-click Desktop Mate in Steam
+2. Select Properties
+3. Go to Launch Options
+4. Add: `--melonloader.hideconsole`
+
+## Common Issues
+
+### .NET Runtime Issues
+
+If you see `il2cpp_init detour failed: It was not possible to find a compatible framework version`:
+
+- Make sure you have **.NET 6.0** installed specifically
+- Earlier or later versions will not work
+- Download from the official Microsoft website
+
+### MelonLoader Version
+
+Always use MelonLoader version 0.6.6:
+
+- Avoid nightly builds
+- If F4 file explorer doesn't open, reinstall MelonLoader 0.6.6
+- Some keyboards may require pressing `Fn + F4`
+
+### File Explorer Issues
+
+If F4 file explorer isn't working:
+
+1. Ensure MelonLoader 0.6.6 is installed
+2. Try `Fn + F4` if your keyboard requires it
+3. Check file placement:
+   - Don't put Mods and UserLibs inside the pre-existing mods folder
+   - Place them directly in the Desktop Mate folder
+
+### Model Issues
+
+- Invalid file errors may occur with Cyrillic characters in file paths
+- Physics issues (hair, clothes) are common with some models
+  - VRoidHub models often have better physics
+  - Short hair and simple clothing typically work better
+- "Mikuspin" glitch (character rotating):
+  1. Switch to default character using DM menu
+  2. Reselect your character with F4 browser
+
+### Transparency Issues
+
+If the console is transparent instead of the character:
+
+1. Try closing and reopening
+2. Keep focus on avatar while loading
+3. Update GPU drivers
+4. For NVIDIA users:
+   - Disable FXAA and MFAA for Desktop Mate in NVIDIA Control Panel
+
+### Log File Management
+
+To prevent excessive logging:
+
+1. Press `Windows + R`
+2. Enter: `%userprofile%\appdata\locallow\infiniteloop\desktopmate`
+3. Open log files in a text editor
+4. Clear contents
+5. Set files to read-only

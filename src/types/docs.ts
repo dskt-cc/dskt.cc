@@ -20,6 +20,16 @@ export interface Section {
   }[];
 }
 
-export interface DocsStructure {
-  [key: string]: Section;
-}
+export type DocsStructure = {
+  [key: string]: {
+    title: string;
+    items: Array<{
+      title: string;
+      slug: string;
+      subitems?: Array<{
+        title: string;
+        slug: string;
+      }>;
+    }>;
+  };
+};

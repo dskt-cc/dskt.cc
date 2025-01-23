@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from "next/link";
 
 export default function PrivacyPage() {
   return (
@@ -28,12 +28,11 @@ export default function PrivacyPage() {
             We query GitHub for all mod information, which we store to provide
             you with the latest updates and features.
           </p>
-          <h2 className="text-2xl font-semibold text-miku-teal">
-            Contact Us
-          </h2>
+          <h2 className="text-2xl font-semibold text-miku-teal">Contact Us</h2>
           <p>
             If you have any questions about this Privacy Policy, please contact
-            us at <Link href="mailto:support@example.com">support@example.com</Link>.
+            us at{" "}
+            <Link href="mailto:support@example.com">support@example.com</Link>.
           </p>
         </div>
       </div>

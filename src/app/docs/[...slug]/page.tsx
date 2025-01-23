@@ -1,35 +1,81 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Metadata } from "next";
 import { getDocBySlug, getSectionDocs } from "@/lib/mdx.lib";
-import { DocsLayout } from "@containers/Docs/DocsLayout";
-import { MDXContent } from "@containers/Docs/MDXContent";
+import { ClientDocsPage } from "@containers/Docs/ClientDocsPage";
 import { notFound, redirect } from "next/navigation";
+import DOCS_STRUCTURE from "@constants/docs";
 
-// @TODO: fix typing errors
 type Props = {
-  params: any;
-  searchParams: any;
+  params: {
+    slug: string[];
+  };
+  searchParams: { [key: string]: string | string[] | undefined };
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const resolvedParams = await Promise.resolve(params);
-  try {
-    if (resolvedParams.slug.length === 1) {
-      const sectionDocs = await getSectionDocs(resolvedParams.slug[0]);
-      if (sectionDocs.length > 0) {
-        return {
-          title: `${sectionDocs[0].title} | Documentation`,
-          description: sectionDocs[0].description || "",
-        };
-      }
-    } else if (resolvedParams.slug.length === 2) {
-      const [section, docSlug] = resolvedParams.slug;
-      const { frontMatter } = await getDocBySlug(section, docSlug);
+async function getAllSections(): Promise<string[]> {
+  return Object.keys(DOCS_STRUCTURE);
+}
+
+async function getFirstAvailableDoc(): Promise<{
+  section: string;
+  slug: string;
+} | null> {
+  const sections = await getAllSections();
+
+  for (const section of sections) {
+    const docs = await getSectionDocs(section);
+    if (docs.length > 0) {
       return {
-        title: `${frontMatter.title} | Documentation`,
-        description: frontMatter.description || "",
+        section,
+        slug: docs[0].slug as string,
       };
     }
+  }
+
+  return null;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = params;
+
+  try {
+    if (!slug || slug.length === 0) {
+      return {
+        title: "Documentation",
+      };
+    }
+
+    if (slug.length === 1) {
+      const sectionDocs = await getSectionDocs(slug[0]);
+      if (sectionDocs.length > 0) {
+        const firstDoc = sectionDocs[0];
+        return {
+          title: `${firstDoc.title} | Documentation`,
+          description: firstDoc.description || "",
+        };
+      }
+    }
+
+    if (slug.length === 2) {
+      const [section, docSlug] = slug;
+      try {
+        const { frontMatter } = await getDocBySlug(section, docSlug);
+        return {
+          title: `${frontMatter.title} | Documentation`,
+          description: frontMatter.description || "",
+          openGraph: {
+            title: frontMatter.title,
+            description: frontMatter.description,
+            type: "article",
+            ...(frontMatter.date && {
+              publishedTime: frontMatter.date,
+            }),
+          },
+        };
+      } catch {
+        // If doc not found, fall through to default
+      }
+    }
+
     return {
       title: "Documentation",
     };
@@ -40,41 +86,48 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 }
-
 export default async function DocPage({ params }: Props) {
-  const resolvedParams = await Promise.resolve(params);
-  try {
-    if (resolvedParams.slug.length === 1) {
-      const section = resolvedParams.slug[0];
-      const sectionDocs = await getSectionDocs(section);
+  const { slug } = params;
 
-      if (sectionDocs.length > 0) {
-        return redirect(`/docs/${section}/${sectionDocs[0].slug}`);
+  try {
+    // Handle root docs path
+    if (!slug || slug.length === 0) {
+      const firstDoc = await getFirstAvailableDoc();
+      if (firstDoc) {
+        return redirect(`/docs/${firstDoc.section}/${firstDoc.slug}`);
       }
       return notFound();
     }
 
-    if (resolvedParams.slug.length === 2) {
-      const [section, docSlug] = resolvedParams.slug;
-      const { mdxSource, frontMatter } = await getDocBySlug(section, docSlug);
+    // Handle section path
+    if (slug.length === 1) {
+      const section = slug[0];
+      const sectionDocs = await getSectionDocs(section);
 
-      return (
-        <DocsLayout>
-          <div className="w-full max-w-4xl mx-auto">
-            <h1 className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-miku-deep via-miku-teal to-miku-waterleaf text-transparent bg-clip-text">
-              {frontMatter.title}
-            </h1>
-            {frontMatter.description && (
-              <p className="text-base sm:text-lg text-miku-light/90 mb-6 sm:mb-8">
-                {frontMatter.description}
-              </p>
-            )}
-            <div className="prose prose-invert prose-sm sm:prose lg:prose-lg max-w-none">
-              <MDXContent source={mdxSource} />
-            </div>
-          </div>
-        </DocsLayout>
-      );
+      if (sectionDocs.length > 0) {
+        const sortedDocs = [...sectionDocs].sort((a, b) => {
+          const orderA = a.order ?? Infinity;
+          const orderB = b.order ?? Infinity;
+          return orderA - orderB;
+        });
+
+        return redirect(`/docs/${section}/${sortedDocs[0].slug}`);
+      }
+      return notFound();
+    }
+
+    // Handle document path
+    if (slug.length === 2) {
+      const [section, docSlug] = slug;
+      try {
+        const { mdxSource, frontMatter } = await getDocBySlug(section, docSlug);
+        return (
+          <ClientDocsPage mdxSource={mdxSource} frontMatter={frontMatter} />
+        );
+      } catch (error) {
+        console.error("Doc loading error:", error);
+        return notFound();
+      }
     }
 
     return notFound();
@@ -82,4 +135,18 @@ export default async function DocPage({ params }: Props) {
     console.error("Doc loading error:", error);
     return notFound();
   }
+}
+
+export async function generateStaticParams() {
+  const paths: { slug: string[] }[] = [];
+  const sections = await getAllSections();
+
+  for (const section of sections) {
+    const docs = await getSectionDocs(section);
+    docs.forEach((doc) => {
+      paths.push({ slug: [section, doc.slug as string] });
+    });
+  }
+
+  return paths;
 }

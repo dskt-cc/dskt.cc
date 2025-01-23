@@ -45,23 +45,33 @@ const getSeverityColors = (severity: Bug["severity"]) => {
   }
 };
 
-const BugCard = ({ bug, isPatched = false }: { bug: Bug; isPatched?: boolean }) => (
+const BugCard = ({
+  bug,
+  isPatched = false,
+}: {
+  bug: Bug;
+  isPatched?: boolean;
+}) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     className={`rounded-xl border ${getSeverityColors(
-      bug.severity
+      bug.severity,
     )} p-6 backdrop-blur-sm`}
   >
     <div className="flex items-start justify-between mb-4">
       <div>
         <div className="flex items-center gap-2 mb-2">
           <span className="text-sm font-mono">{bug.id}</span>
-          <span className={`px-2 py-0.5 rounded-full text-xs ${getSeverityColors(bug.severity)}`}>
+          <span
+            className={`px-2 py-0.5 rounded-full text-xs ${getSeverityColors(bug.severity)}`}
+          >
             {bug.severity}
           </span>
         </div>
-        <h3 className="text-xl font-semibold text-miku-waterleaf mb-2">{bug.title}</h3>
+        <h3 className="text-xl font-semibold text-miku-waterleaf mb-2">
+          {bug.title}
+        </h3>
         <p className="text-miku-light/70">{bug.description}</p>
       </div>
       {isPatched ? (
@@ -111,7 +121,15 @@ const BugCard = ({ bug, isPatched = false }: { bug: Bug; isPatched?: boolean }) 
   </motion.div>
 );
 
-const StatsCard = ({ title, value, icon }: { title: string; value: string | number; icon: React.ReactNode }) => (
+const StatsCard = ({
+  title,
+  value,
+  icon,
+}: {
+  title: string;
+  value: string | number;
+  icon: React.ReactNode;
+}) => (
   <div className="bg-miku-gray/50 backdrop-blur-sm rounded-xl border border-miku-deep/20 p-6">
     <div className="flex items-center gap-4">
       <div className="text-miku-teal">{icon}</div>
@@ -139,8 +157,12 @@ export default function BugsPage() {
     const fetchBugs = async () => {
       try {
         const [patchedResponse, knownResponse] = await Promise.all([
-          fetch('https://raw.githubusercontent.com/dskt-cc/bugs/main/patched.json'),
-          fetch('https://raw.githubusercontent.com/dskt-cc/bugs/main/known.json')
+          fetch(
+            "https://raw.githubusercontent.com/dskt-cc/bugs/main/patched.json",
+          ),
+          fetch(
+            "https://raw.githubusercontent.com/dskt-cc/bugs/main/known.json",
+          ),
         ]);
 
         const patchedData = await patchedResponse.json();
@@ -154,7 +176,7 @@ export default function BugsPage() {
         const fixedBugs = patchedData.bugs.length;
         const openBugs = knownData.bugs.length;
         const criticalOpenBugs = knownData.bugs.filter(
-          (bug: Bug) => bug.severity === "critical"
+          (bug: Bug) => bug.severity === "critical",
         ).length;
 
         // Calculate average fix time
@@ -167,7 +189,7 @@ export default function BugsPage() {
           fixTimes.length > 0
             ? Math.round(
                 fixTimes.reduce((a, b) => a + b, 0) /
-                  (fixTimes.length * 1000 * 60 * 60 * 24)
+                  (fixTimes.length * 1000 * 60 * 60 * 24),
               )
             : 0;
 
@@ -216,7 +238,7 @@ export default function BugsPage() {
             Monitor bugs in dskt.cc and it&apos;s services
           </p>
         </div>
-  
+
         {/* Bug Reporting Guide */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
           <div className="bg-miku-gray/50 backdrop-blur-sm rounded-xl border border-miku-deep/20 p-6">
@@ -224,18 +246,20 @@ export default function BugsPage() {
               How to Report a Bug
             </h2>
             <div className="space-y-4 text-miku-light/70">
-              <p>
-                To report a bug, please follow these steps:
-              </p>
+              <p>To report a bug, please follow these steps:</p>
               <ol className="list-decimal list-inside space-y-2">
-                <li>Visit our <a 
-                  href="https://github.com/dskt-cc/bugs/issues/new" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-miku-teal hover:text-miku-waterleaf transition-colors duration-200"
-                >
-                  GitHub Issues
-                </a> page</li>
+                <li>
+                  Visit our{" "}
+                  <a
+                    href="https://github.com/dskt-cc/bugs/issues/new"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-miku-teal hover:text-miku-waterleaf transition-colors duration-200"
+                  >
+                    GitHub Issues
+                  </a>{" "}
+                  page
+                </li>
                 <li>Use the bug report template</li>
                 <li>Include steps to reproduce</li>
                 <li>Add relevant system information</li>
@@ -243,7 +267,7 @@ export default function BugsPage() {
               </ol>
             </div>
           </div>
-  
+
           <div className="bg-miku-gray/50 backdrop-blur-sm rounded-xl border border-miku-deep/20 p-6">
             <h2 className="text-xl font-semibold text-miku-waterleaf mb-4">
               Bug Severity Levels
@@ -252,27 +276,35 @@ export default function BugsPage() {
               <div className="flex items-center gap-3">
                 <span className="w-2 h-2 rounded-full bg-miku-pink"></span>
                 <span className="text-miku-pink">Critical</span>
-                <span className="text-miku-light/70">- Application crashes, data loss</span>
+                <span className="text-miku-light/70">
+                  - Application crashes, data loss
+                </span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="w-2 h-2 rounded-full bg-miku-deep"></span>
                 <span className="text-miku-deep">High</span>
-                <span className="text-miku-light/70">- Major feature broken</span>
+                <span className="text-miku-light/70">
+                  - Major feature broken
+                </span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="w-2 h-2 rounded-full bg-miku-teal"></span>
                 <span className="text-miku-teal">Medium</span>
-                <span className="text-miku-light/70">- Feature partially broken</span>
+                <span className="text-miku-light/70">
+                  - Feature partially broken
+                </span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="w-2 h-2 rounded-full bg-miku-waterleaf"></span>
                 <span className="text-miku-waterleaf">Low</span>
-                <span className="text-miku-light/70">- Minor issues, visual bugs</span>
+                <span className="text-miku-light/70">
+                  - Minor issues, visual bugs
+                </span>
               </div>
             </div>
           </div>
         </div>
-  
+
         {/* Security Notice */}
         <div className="bg-miku-deep/10 backdrop-blur-sm rounded-xl border border-miku-deep/20 p-6 mb-12">
           <h2 className="text-xl font-semibold text-miku-waterleaf mb-4">
@@ -280,10 +312,14 @@ export default function BugsPage() {
           </h2>
           <div className="text-miku-light/70">
             <p className="mb-4">
-              For security-related issues, please do not create a public issue. Instead:
+              For security-related issues, please do not create a public issue.
+              Instead:
             </p>
             <ul className="list-disc list-inside space-y-2">
-              <li>Email us at <span className="text-miku-teal">security@dskt.cc</span></li>
+              <li>
+                Email us at{" "}
+                <span className="text-miku-teal">security@dskt.cc</span>
+              </li>
               <li>Include &quot;SECURITY&quot; in the subject line</li>
               <li>Provide detailed information about the vulnerability</li>
               <li>Wait for confirmation before public disclosure</li>
@@ -318,7 +354,9 @@ export default function BugsPage() {
         {/* Known Bugs Section */}
         {knownBugs.length > 0 && (
           <div className="mb-12">
-            <h2 className="text-2xl font-bold mb-6 text-miku-waterleaf">Known Bugs</h2>
+            <h2 className="text-2xl font-bold mb-6 text-miku-waterleaf">
+              Known Bugs
+            </h2>
             <div className="space-y-6">
               {knownBugs.map((bug) => (
                 <BugCard key={bug.id} bug={bug} />
@@ -330,7 +368,9 @@ export default function BugsPage() {
         {/* Patched Bugs Section */}
         {patchedBugs.length > 0 && (
           <div>
-            <h2 className="text-2xl font-bold mb-6 text-miku-waterleaf">Recently Patched</h2>
+            <h2 className="text-2xl font-bold mb-6 text-miku-waterleaf">
+              Recently Patched
+            </h2>
             <div className="space-y-6">
               {patchedBugs.map((bug) => (
                 <BugCard key={bug.id} bug={bug} isPatched />

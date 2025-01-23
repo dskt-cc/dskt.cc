@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from "next/link";
 
 export default function TermsPage() {
   return (
@@ -35,12 +35,11 @@ export default function TermsPage() {
             We reserve the right to update these terms at any time. We will
             notify you of any changes by posting the new terms on our website.
           </p>
-          <h2 className="text-2xl font-semibold text-miku-teal">
-            Contact Us
-          </h2>
+          <h2 className="text-2xl font-semibold text-miku-teal">Contact Us</h2>
           <p>
             If you have any questions about these Terms of Service, please
-            contact us at <Link href="mailto:support@example.com">support@example.com</Link>.
+            contact us at{" "}
+            <Link href="mailto:support@example.com">support@example.com</Link>.
           </p>
         </div>
       </div>

@@ -22,10 +22,10 @@ export default function ContributorsPage() {
     const loadContributors = async () => {
       try {
         const mods = await fetchMods();
-        
+
         // Get unique authors from mods
         const authorMap = new Map<string, string[]>();
-        mods.forEach(mod => {
+        mods.forEach((mod) => {
           if (mod.meta?.author) {
             const existing = authorMap.get(mod.meta.author) || [];
             authorMap.set(mod.meta.author, [...existing, mod.name]);
@@ -36,7 +36,9 @@ export default function ContributorsPage() {
         const contributorPromises = Array.from(authorMap.entries()).map(
           async ([username, mods]) => {
             try {
-              const response = await fetch(`https://api.github.com/users/${username}`);
+              const response = await fetch(
+                `https://api.github.com/users/${username}`,
+              );
               const data = await response.json();
               return {
                 username,
@@ -48,20 +50,25 @@ export default function ContributorsPage() {
               console.error(`Error fetching data for ${username}:`, error);
               return null;
             }
-          }
+          },
         );
 
         const modAuthors = (await Promise.all(contributorPromises)).filter(
-          (author): author is Contributor => author !== null
+          (author): author is Contributor => author !== null,
         );
 
         // If dvhsh is in modAuthors, merge the contributions with the lead developer entry
-        const dvhshAuthor = modAuthors.find(author => author.username === "dvhsh");
-        const otherAuthors = modAuthors.filter(author => author.username !== "dvhsh");
+        const dvhshAuthor = modAuthors.find(
+          (author) => author.username === "dvhsh",
+        );
+        const otherAuthors = modAuthors.filter(
+          (author) => author.username !== "dvhsh",
+        );
 
         const leadDeveloper: Contributor = {
           username: "dvhsh",
-          avatarUrl: dvhshAuthor?.avatarUrl || "https://api.github.com/users/dvhsh",
+          avatarUrl:
+            dvhshAuthor?.avatarUrl || "https://api.github.com/users/dvhsh",
           contributions: dvhshAuthor?.contributions || [],
           role: "Lead Developer",
           id: "lead-dvhsh", // Unique ID for lead developer entry
@@ -129,7 +136,7 @@ export default function ContributorsPage() {
         )}
       </div>
     </motion.div>
-  );  
+  );
 
   if (loading) {
     return (
