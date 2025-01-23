@@ -4,6 +4,7 @@ import { getDocBySlug, getSectionDocs } from "@/lib/mdx.lib";
 import { notFound, redirect } from "next/navigation";
 import DOCS_STRUCTURE from "@constants/docs";
 import { ClientDocsPage } from "@containers/Docs/ClientDocsPage";
+import { DocsLayout } from "@containers/Docs/DocsLayout";
 
 type Props = {
   params: any;
@@ -90,14 +91,31 @@ export default async function DocPage({ params }: Props) {
       try {
         const { mdxSource, frontMatter } = await getDocBySlug(section, docSlug);
         return (
-          <div className="docs-container">
+          <DocsLayout>
             <ClientDocsPage mdxSource={mdxSource} frontMatter={frontMatter} />
-          </div>
+          </DocsLayout>
         );
       } catch (error) {
         console.error("Doc loading error:", error);
         return notFound();
       }
+    }
+
+    // Handle section path
+    if (slug.length === 1) {
+      const section = slug[0];
+      const sectionDocs = await getSectionDocs(section);
+
+      if (sectionDocs.length > 0) {
+        const sortedDocs = [...sectionDocs].sort((a, b) => {
+          const orderA = a.order ?? Infinity;
+          const orderB = b.order ?? Infinity;
+          return orderA - orderB;
+        });
+
+        return redirect(`/docs/${section}/${sortedDocs[0].slug}`);
+      }
+      return notFound();
     }
 
     return notFound();
