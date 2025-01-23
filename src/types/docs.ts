@@ -1,3 +1,5 @@
+import type { MDXRemoteSerializeResult } from "next-mdx-remote";
+
 export interface DocFrontMatter {
   title: string;
   description?: string;
@@ -18,6 +20,11 @@ export interface Section {
     title: string;
     slug: string;
   }[];
+}
+
+export interface GetDocBySlugResult {
+  mdxSource: MDXRemoteSerializeResult;
+  frontMatter: DocFrontMatter;
 }
 
 export type DocsStructure = {

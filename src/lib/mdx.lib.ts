@@ -5,17 +5,13 @@ import { serialize } from "next-mdx-remote/serialize";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import rehypeHighlight from "rehype-highlight";
-import type { DocFrontMatter } from "@/types/docs";
-
-import type { MDXRemoteSerializeResult } from "next-mdx-remote";
-
-interface GetDocBySlugResult {
-  mdxSource: MDXRemoteSerializeResult;
-  frontMatter: DocFrontMatter;
-}
+import type { DocFrontMatter, GetDocBySlugResult } from "@/types/docs";
 
 const ROOT_PATH = process.cwd();
 const DOCS_PATH = path.join(ROOT_PATH, "src/content/docs");
+
+// Add cache for production
+const contentCache = new Map<string, GetDocBySlugResult>();
 
 export async function getSectionDocs(
   section: string,
@@ -28,10 +24,8 @@ export async function getSectionDocs(
       files
         .filter((file) => file.endsWith(".mdx"))
         .map(async (file) => {
-          const content = await fs.readFile(
-            path.join(sectionPath, file),
-            "utf8",
-          );
+          const filePath = path.join(sectionPath, file);
+          const content = await fs.readFile(filePath, "utf8");
           const { data } = matter(content);
           return {
             ...(data as DocFrontMatter),
@@ -55,6 +49,13 @@ export async function getDocBySlug(
   section: string,
   slug: string,
 ): Promise<GetDocBySlugResult> {
+  const cacheKey = `${section}/${slug}`;
+
+  // Check cache in production
+  if (process.env.NODE_ENV === "production" && contentCache.has(cacheKey)) {
+    return contentCache.get(cacheKey)!;
+  }
+
   try {
     const fullPath = path.join(DOCS_PATH, section, `${slug}.mdx`);
     const fileContents = await fs.readFile(fullPath, "utf8");
@@ -66,12 +67,20 @@ export async function getDocBySlug(
         rehypePlugins: [rehypeSlug, rehypeHighlight],
       },
       scope: data,
+      parseFrontmatter: true,
     });
 
-    return {
+    const result: GetDocBySlugResult = {
       mdxSource,
       frontMatter: data as DocFrontMatter,
     };
+
+    // Cache in production
+    if (process.env.NODE_ENV === "production") {
+      contentCache.set(cacheKey, result);
+    }
+
+    return result;
   } catch (error) {
     console.error(`Error loading doc ${section}/${slug}:`, error);
     throw new Error(`Failed to load doc: ${section}/${slug}`);

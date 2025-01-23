@@ -1,5 +1,14 @@
-import { redirect } from "next/navigation";
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function DocsPage() {
-  redirect("/docs/getting-started/installation");
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("/docs/getting-started/installation");
+  }, [router]);
+
+  return null;
 }
