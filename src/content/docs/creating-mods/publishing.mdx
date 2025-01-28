@@ -7,14 +7,12 @@ description: To list your mod on dskt.cc, include a `dskt.json` file in the root
 
 ```json
 {
-  "name": "YourModName",
-  "meta": {
-    "description": "A brief description of your mod",
-    "author": "YourGitHubUsername",
-    "category": ["Performance"],
-    "type": "MelonLoader",
-    "version": "1.0.0"
-  },
+  "author": "YourGitHubUsername",
+  "version": "1.0.0",
+  "type": "MelonLoader",
+  "category": ["Performance"],
+  "description": "A brief description of your mod",
+  "requires": ["ModName1", "ModName2"],
   "locale": {
     "default": "en-US",
     "supported": ["en-US", "ja-JP"]
@@ -28,50 +26,46 @@ description: To list your mod on dskt.cc, include a `dskt.json` file in the root
 
 ## Required Fields
 
-### Core Properties
-
-- **name**: Your mod's name (no spaces)
-- **meta**: Object containing mod metadata
-
-### Meta Properties
-
-- **description**: Brief description of your mod
-- **author**: Your GitHub username
+- **author**: Your GitHub username (alphanumeric and hyphens only)
+- **version**: Current version (semver format)
+- **type**: Mod loader type:
+  - `"MelonLoader"`: MelonLoader mod
+  - `"BepInEx"`: BepInEx plugin
+  - `"Both"`: Supports both loaders
 - **category**: Array of categories from:
   - `"Performance"`: Performance improvements
   - `"QualityOfLife"`: Convenience features
   - `"Content"`: New features or content
   - `"Overhaul"`: Major changes
   - `"Other"`: Misc modifications
-- **type**: One of:
-  - `"MelonLoader"`: MelonLoader mod
-  - `"BepInEx"`: BepInEx plugin
-  - `"Both"`: Supports both loaders
-- **version**: Current version (semver format)
+- **description**: Brief description of your mod (10-500 characters)
 
 ## Optional Fields
 
-### Localization
+### Dependencies
+```json
+"requires": ["MateChat", "CustomAvatarLoader"]
+```
+- Array of mod names that your mod depends on
+- Names must match existing mods in the official mod list
 
+### Localization
 ```json
 "locale": {
   "default": "en-US",
   "supported": ["en-US", "ja-JP"]
 }
 ```
-
 - **default**: Default language code
 - **supported**: Array of supported language codes
 
 ### Sponsorship
-
 ```json
 "sponsor": {
   "name": "Sponsor Name",
   "url": "https://sponsor.url"
 }
 ```
-
 - **name**: Sponsor's name
 - **url**: Sponsor's website
 
@@ -79,14 +73,12 @@ description: To list your mod on dskt.cc, include a `dskt.json` file in the root
 
 ```json
 {
-  "name": "MateChat",
-  "meta": {
-    "description": "A MelonLoader mod that lets you chat with your Desktop Mate using AI! ♪",
-    "author": "dvhsh",
-    "category": ["Content", "Overhaul"],
-    "type": "MelonLoader",
-    "version": "1.5.1"
-  },
+  "author": "dvhsh",
+  "version": "1.5.1",
+  "type": "MelonLoader",
+  "category": ["Content", "Overhaul"],
+  "description": "A MelonLoader mod that lets you chat with your Desktop Mate using AI! ♪",
+  "requires": ["MFrameworkLoader"],
   "locale": {
     "default": "en-US",
     "supported": ["en-US", "ja-JP"]

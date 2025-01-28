@@ -14,6 +14,15 @@ export interface ModMeta {
   category: ModCategory[];
   type: ModType;
   version: string;
+  requires?: string[];
+  sponsor?: {
+    name: string;
+    url: string;
+  };
+  locale?: {
+    default: string;
+    supported: string[];
+  };
 }
 
 export interface Mod {
