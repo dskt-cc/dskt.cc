@@ -2,31 +2,21 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
-  
   output: "standalone",
   experimental: {
-    outputFileTracingRoot: undefined,
-    outputStandalone: true,
     mdxRs: true,
   },
-  
   reactStrictMode: true,
-  swcMinify: true,
   poweredByHeader: false,
-  
   images: {
     domains: ["dskt.cc"],
-
     formats: ["image/avif", "image/webp"],
-
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256],
-    
     unoptimized: true,
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    
     remotePatterns: [
       {
         protocol: "https",
@@ -65,11 +55,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
-
   async headers() {
     return [
       {
